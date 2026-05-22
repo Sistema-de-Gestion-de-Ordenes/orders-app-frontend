@@ -1,27 +1,22 @@
 ---
 name: frontend_issue_template
 about: This is the template to create an issue
-title: "[Front-end]"
+title: '[Front-end] "Name of the issue"'
 labels: ''
 assignees: ''
-
----
-
-title: "[Frontend] "
-labels: frontend
-assignees: ''
----
-
-# Screen / Page
-
-Ejemplo:
-Payments Dashboard
 
 ---
 
 # Description
 
 Describe la funcionalidad o interfaz que debe implementarse.
+
+---
+
+# Screen / Page
+
+Ejemplo:
+Payments Dashboard
 
 ---
 
