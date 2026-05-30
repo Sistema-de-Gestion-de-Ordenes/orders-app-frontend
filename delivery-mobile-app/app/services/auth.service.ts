@@ -10,13 +10,17 @@ export class AuthService {
             content: JSON.stringify({ email, password }),
         });
 
-        const data = response.content.toJSON();
+        const raw = response.content?.toJSON?.() ?? null;
 
         if (response.statusCode < 200 || response.statusCode >= 300) {
-            throw new Error(data.error ?? 'Login failed.');
+            throw new Error(raw?.error ?? 'Login failed.');
         }
 
-        return data.token as string;
+        if (!raw?.token) {
+            throw new Error('Invalid server response: missing token.');
+        }
+
+        return raw.token as string;
     }
 
     saveToken(token: string): void {
