@@ -1,0 +1,197 @@
+<Page navigatingTo="onNavigatingTo" actionBarHidden="true"
+      xmlns="http://schemas.nativescript.org/tns.xsd">
+
+    <GridLayout rows="auto, auto, *">
+
+        <!-- Custom header -->
+        <GridLayout row="0" columns="40, *, 40" backgroundColor="#FFFFFF"
+                    paddingTop="28" paddingBottom="12" paddingLeft="16" paddingRight="16">
+            <Label col="0" text="‹" fontSize="28" color="#1A1A1A"
+                   verticalAlignment="middle" tap="{{ onBack }}" />
+            <Label col="1" text="Crear cliente" fontSize="18" fontWeight="bold"
+                   color="#1A1A1A" textAlignment="center" verticalAlignment="middle" />
+            <Label col="2" text="" />
+        </GridLayout>
+
+        <!-- Success card -->
+        <StackLayout row="1" class="success-card"
+                     visibility="{{ showSuccess ? 'visible' : 'collapsed' }}">
+            <GridLayout columns="auto, *, auto">
+                <StackLayout col="0" width="28" height="28" borderRadius="14"
+                             backgroundColor="#4CAF50" verticalAlignment="middle" marginRight="12">
+                    <Label text="✓" color="#FFFFFF" fontSize="14" fontWeight="bold"
+                           textAlignment="center" verticalAlignment="middle" />
+                </StackLayout>
+                <Label col="1" text="Cliente guardado correctamente" fontSize="14"
+                       color="#1A1A1A" verticalAlignment="middle" />
+                <Label col="2" text="⊕" fontSize="20" color="#9E9E9E"
+                       verticalAlignment="middle" marginLeft="8" tap="{{ onDismissSuccess }}" />
+            </GridLayout>
+        </StackLayout>
+
+        <ScrollView row="2">
+            <StackLayout class="page-container">
+
+                <!-- Profile photo -->
+                <Label text="Foto de perfil" class="label-field" />
+                <StackLayout class="photo-container">
+
+                    <!-- Placeholder (no photo) -->
+                    <GridLayout width="80" height="80" horizontalAlignment="center"
+                                marginBottom="16"
+                                visibility="{{ hasProfilePhoto ? 'collapsed' : 'visible' }}">
+                        <StackLayout width="80" height="80" borderRadius="40"
+                                     backgroundColor="#EEEEEE">
+                            <StackLayout width="28" height="28" borderRadius="14"
+                                         backgroundColor="#BDBDBD" horizontalAlignment="center"
+                                         marginTop="14" />
+                            <StackLayout width="46" height="22" borderRadius="23"
+                                         backgroundColor="#BDBDBD" horizontalAlignment="center"
+                                         marginTop="4" />
+                        </StackLayout>
+                        <GridLayout width="28" height="28" borderRadius="14"
+                                    backgroundColor="#4CAF50"
+                                    verticalAlignment="bottom" horizontalAlignment="right">
+                            <StackLayout horizontalAlignment="center" verticalAlignment="middle">
+                                <StackLayout width="6" height="3" borderRadius="1"
+                                             backgroundColor="#FFFFFF" horizontalAlignment="center" />
+                                <GridLayout width="16" height="11" borderRadius="2"
+                                            borderWidth="1.5" borderColor="#FFFFFF"
+                                            backgroundColor="transparent">
+                                    <StackLayout width="6" height="6" borderRadius="3"
+                                                 borderWidth="1.5" borderColor="#FFFFFF"
+                                                 backgroundColor="transparent"
+                                                 horizontalAlignment="center"
+                                                 verticalAlignment="middle" />
+                                </GridLayout>
+                            </StackLayout>
+                        </GridLayout>
+                    </GridLayout>
+
+                    <!-- Photo preview -->
+                    <GridLayout width="80" height="80" horizontalAlignment="center"
+                                marginBottom="16"
+                                visibility="{{ hasProfilePhoto ? 'visible' : 'collapsed' }}">
+                        <Image src="{{ profilePhotoSource }}" width="80" height="80"
+                               borderRadius="40" stretch="aspectFill" />
+                        <GridLayout width="28" height="28" borderRadius="14"
+                                    backgroundColor="#4CAF50"
+                                    verticalAlignment="bottom" horizontalAlignment="right">
+                            <StackLayout horizontalAlignment="center" verticalAlignment="middle">
+                                <StackLayout width="6" height="3" borderRadius="1"
+                                             backgroundColor="#FFFFFF" horizontalAlignment="center" />
+                                <GridLayout width="16" height="11" borderRadius="2"
+                                            borderWidth="1.5" borderColor="#FFFFFF"
+                                            backgroundColor="transparent">
+                                    <StackLayout width="6" height="6" borderRadius="3"
+                                                 borderWidth="1.5" borderColor="#FFFFFF"
+                                                 backgroundColor="transparent"
+                                                 horizontalAlignment="center"
+                                                 verticalAlignment="middle" />
+                                </GridLayout>
+                            </StackLayout>
+                        </GridLayout>
+                    </GridLayout>
+
+                    <GridLayout columns="*, 10, *" marginBottom="10">
+                        <Button col="0" text="Cámara" tap="{{ onTakePhoto }}"
+                                class="btn-secondary" />
+                        <Button col="2" text="Galería" tap="{{ onPickFromGallery }}"
+                                class="btn-secondary" />
+                    </GridLayout>
+
+                    <Label text="Formatos permitidos: JPG, PNG. Máx 5MB."
+                           class="text-small" textWrap="true" />
+                </StackLayout>
+
+                <!-- Name -->
+                <Label text="Nombre completo" class="label-field" marginTop="20" />
+                <GridLayout columns="auto, *" class="input-field">
+                    <StackLayout col="0" width="16" marginRight="12" verticalAlignment="middle">
+                        <StackLayout width="8" height="8" borderRadius="4"
+                                     borderWidth="1.5" borderColor="#BDBDBD"
+                                     backgroundColor="transparent" horizontalAlignment="center" />
+                        <StackLayout width="14" height="7"
+                                     borderTopLeftRadius="7" borderTopRightRadius="7"
+                                     borderWidth="1.5" borderBottomWidth="0" borderColor="#BDBDBD"
+                                     backgroundColor="transparent"
+                                     horizontalAlignment="center" marginTop="1" />
+                    </StackLayout>
+                    <TextField col="1" hint="Ej. María López" text="{{ name }}"
+                               autocorrect="false" backgroundColor="transparent"
+                               borderWidth="0" padding="0" />
+                </GridLayout>
+
+                <!-- Email -->
+                <Label text="Correo electrónico" class="label-field" />
+                <GridLayout columns="auto, *" class="input-field">
+                    <StackLayout col="0" width="16" marginRight="12" verticalAlignment="middle">
+                        <StackLayout width="16" height="11" borderRadius="2"
+                                     borderWidth="1.5" borderColor="#BDBDBD"
+                                     backgroundColor="transparent" horizontalAlignment="center">
+                            <StackLayout width="9" height="1.5" backgroundColor="#BDBDBD"
+                                         horizontalAlignment="left" marginTop="3" rotation="30" />
+                            <StackLayout width="9" height="1.5" backgroundColor="#BDBDBD"
+                                         horizontalAlignment="right" marginTop="-1.5" rotation="-30" />
+                        </StackLayout>
+                    </StackLayout>
+                    <TextField col="1" hint="ej. maria.lopez@mail.com" text="{{ email }}"
+                               keyboardType="email" autocorrect="false"
+                               autocapitalizationType="none" backgroundColor="transparent"
+                               borderWidth="0" padding="0" />
+                </GridLayout>
+
+                <!-- Password -->
+                <Label text="Contraseña" class="label-field" />
+                <GridLayout columns="auto, *" class="input-field">
+                    <StackLayout col="0" width="16" marginRight="12" verticalAlignment="middle">
+                        <StackLayout width="8" height="6"
+                                     borderTopLeftRadius="4" borderTopRightRadius="4"
+                                     borderWidth="1.5" borderBottomWidth="0" borderColor="#BDBDBD"
+                                     backgroundColor="transparent" horizontalAlignment="center" />
+                        <StackLayout width="13" height="9" borderRadius="2"
+                                     borderWidth="1.5" borderColor="#BDBDBD"
+                                     backgroundColor="transparent" horizontalAlignment="center" />
+                    </StackLayout>
+                    <TextField col="1" secure="true" hint="••••••••" text="{{ password }}"
+                               backgroundColor="transparent" borderWidth="0" padding="0" />
+                </GridLayout>
+
+                <!-- Phone -->
+                <Label text="Teléfono" class="label-field" />
+                <GridLayout columns="auto, *" class="input-field">
+                    <StackLayout col="0" width="16" marginRight="12" verticalAlignment="middle">
+                        <StackLayout width="12" height="16" borderRadius="6"
+                                     borderWidth="1.5" borderColor="#BDBDBD"
+                                     backgroundColor="transparent" horizontalAlignment="center">
+                            <StackLayout width="4" height="3" borderRadius="1"
+                                         backgroundColor="#BDBDBD"
+                                         horizontalAlignment="center" marginTop="2" />
+                            <StackLayout width="4" height="3" borderRadius="1"
+                                         backgroundColor="#BDBDBD"
+                                         horizontalAlignment="center" marginTop="4" />
+                        </StackLayout>
+                    </StackLayout>
+                    <TextField col="1" hint="67389826" text="{{ phone }}"
+                               keyboardType="phone" backgroundColor="transparent"
+                               borderWidth="0" padding="0" />
+                </GridLayout>
+
+
+<!-- Error message -->
+                <Label text="{{ errorMessage }}" class="error-label"
+                       visibility="{{ hasError ? 'visible' : 'collapsed' }}" textWrap="true" />
+
+                <!-- Save button -->
+                <Button text="{{ isLoading ? 'Guardando...' : 'Guardar Cliente' }}"
+                        tap="{{ onSave }}" isEnabled="{{ !isLoading }}"
+                        class="btn-primary" marginTop="8" />
+
+                <StackLayout height="40" />
+
+            </StackLayout>
+        </ScrollView>
+
+    </GridLayout>
+
+</Page>

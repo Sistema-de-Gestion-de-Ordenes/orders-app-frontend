@@ -5,6 +5,6 @@
     </ActionBar>
 
     <GridLayout>
-        <!-- Add your page content here -->
+        <Button text="Crear cliente" tap="onGoToCreateClient" class="btn-primary" margin="24" />
     </GridLayout>
 </Page>
