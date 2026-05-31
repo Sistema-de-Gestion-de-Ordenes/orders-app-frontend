@@ -1,0 +1,123 @@
+<Page navigatingTo="onNavigatingTo" xmlns="http://schemas.nativescript.org/tns.xsd">
+
+    <ActionBar flat="true" backgroundColor="#FFFFFF">
+        <ActionBar.titleView>
+            <Label text="New Delivery" fontSize="20" fontWeight="bold" color="#1A1A1A" />
+        </ActionBar.titleView>
+        <NavigationButton text="Back" android.systemIcon="ic_menu_back" />
+    </ActionBar>
+
+    <ScrollView>
+        <StackLayout class="page-container">
+
+            <!-- Loading dropdowns -->
+            <StackLayout visibility="{{ isLoadingDropdowns ? 'visible' : 'collapsed' }}"
+                         verticalAlignment="middle" horizontalAlignment="center" marginTop="80">
+                <ActivityIndicator busy="true" color="#4CAF50" width="48" height="48" />
+                <Label text="Loading data..." class="subtitle" marginTop="12" />
+            </StackLayout>
+
+            <!-- Error state -->
+            <StackLayout visibility="{{ hasError &amp;&amp; clientNames.length === 0 ? 'visible' : 'collapsed' }}"
+                         verticalAlignment="middle" horizontalAlignment="center" marginTop="80" padding="32">
+                <Label text="⚠️" fontSize="48" textAlignment="center" />
+                <Label text="{{ errorMessage }}" class="subtitle" textWrap="true"
+                       textAlignment="center" marginTop="8" marginBottom="16" />
+                <Button text="Retry" tap="{{ onRetryTap }}" class="btn-primary" width="160" />
+            </StackLayout>
+
+            <!-- Form -->
+            <StackLayout visibility="{{ !isLoadingDropdowns ? 'visible' : 'collapsed' }}">
+
+                <!-- Customer picker -->
+                <Label text="Customer" class="label-field" />
+                <ListPicker
+                    items="{{ clientNames }}"
+                    selectedIndex="{{ selectedClientIndex }}"
+                    style="height: 100; color: #1A1A1A; font-size: 15;
+                           background-color: #F5F5F5; border-radius: 10;
+                           border-width: 1; border-color: #E0E0E0; margin-bottom: 16;" />
+
+                <!-- Driver picker -->
+                <Label text="Driver" class="label-field" />
+                <ListPicker
+                    items="{{ driverNames }}"
+                    selectedIndex="{{ selectedDriverIndex }}"
+                    style="height: 100; color: #1A1A1A; font-size: 15;
+                           background-color: #F5F5F5; border-radius: 10;
+                           border-width: 1; border-color: #E0E0E0; margin-bottom: 16;" />
+
+                <!-- Origin -->
+                <Label text="Origin" class="label-field" />
+                <GridLayout columns="auto, *" class="input-field" marginBottom="0">
+                    <Label col="0" text="📍 " fontSize="18" color="#9E9E9E"
+                           verticalAlignment="middle" marginRight="10" />
+                    <TextField col="1" hint="e.g. San José Centro"
+                               text="{{ origin }}" backgroundColor="transparent"
+                               borderWidth="0" padding="0" returnKeyType="next" />
+                </GridLayout>
+
+                <!-- Origin suggestions -->
+                <StackLayout visibility="{{ showOriginSuggestions ? 'visible' : 'collapsed' }}"
+                             backgroundColor="#FFFFFF" borderWidth="1" borderColor="#E0E0E0"
+                             borderRadius="8" marginBottom="12">
+                    <ListView items="{{ originSuggestions }}"
+                              itemTap="{{ onOriginSuggestionTap }}"
+                              separatorColor="#F5F5F5" height="160">
+                        <ListView.itemTemplate>
+                            <Label text="{{ $value }}" fontSize="13" color="#1A1A1A"
+                                   padding="10 14" textWrap="true" />
+                        </ListView.itemTemplate>
+                    </ListView>
+                </StackLayout>
+                <StackLayout height="16"
+                             visibility="{{ showOriginSuggestions ? 'collapsed' : 'visible' }}" />
+
+                <!-- Destination -->
+                <Label text="Destination" class="label-field" />
+                <GridLayout columns="auto, *" class="input-field" marginBottom="0">
+                    <Label col="0" text="🏁 " fontSize="18" color="#9E9E9E"
+                           verticalAlignment="middle" marginRight="10" />
+                    <TextField col="1" hint="e.g. Cartago Centro"
+                               text="{{ destination }}" backgroundColor="transparent"
+                               borderWidth="0" padding="0" returnKeyType="done" />
+                </GridLayout>
+
+                <!-- Destination suggestions -->
+                <StackLayout visibility="{{ showDestinationSuggestions ? 'visible' : 'collapsed' }}"
+                             backgroundColor="#FFFFFF" borderWidth="1" borderColor="#E0E0E0"
+                             borderRadius="8" marginBottom="12">
+                    <ListView items="{{ destinationSuggestions }}"
+                              itemTap="{{ onDestinationSuggestionTap }}"
+                              separatorColor="#F5F5F5" height="160">
+                        <ListView.itemTemplate>
+                            <Label text="{{ $value }}" fontSize="13" color="#1A1A1A"
+                                   padding="10 14" textWrap="true" />
+                        </ListView.itemTemplate>
+                    </ListView>
+                </StackLayout>
+                <StackLayout height="16"
+                             visibility="{{ showDestinationSuggestions ? 'collapsed' : 'visible' }}" />
+
+                <!-- Error message (validation / submit) -->
+                <Label text="{{ errorMessage }}" class="error-label" textWrap="true"
+                       visibility="{{ hasError ? 'visible' : 'collapsed' }}" marginBottom="8" />
+
+                <!-- Submit -->
+                <Button text="{{ isSubmitting ? 'Creating...' : 'Create Delivery' }}"
+                        tap="{{ onSubmitTap }}"
+                        isEnabled="{{ !isSubmitting }}"
+                        class="btn-primary" marginTop="8" />
+
+                <!-- Cancel -->
+                <Button text="Cancel" tap="{{ onCancelTap }}"
+                        fontSize="14" color="#757575" backgroundColor="transparent"
+                        marginTop="8" />
+
+                <StackLayout height="40" />
+            </StackLayout>
+
+        </StackLayout>
+    </ScrollView>
+
+</Page>
