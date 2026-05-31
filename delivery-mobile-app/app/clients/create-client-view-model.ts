@@ -126,8 +126,8 @@ get profilePhotoSource(): ImageSource | null { return this._profilePhotoSource; 
             this.errorMessage = 'Ingrese un correo electrónico válido.';
             return false;
         }
-        if (!this._password || this._password.length < 6) {
-            this.errorMessage = 'La contraseña debe tener al menos 6 caracteres.';
+        if (!this._password || this._password.length < 8) {
+            this.errorMessage = 'La contraseña debe tener al menos 8 caracteres.';
             return false;
         }
         if (!this._phone.trim()) {
