@@ -17,7 +17,7 @@
                 <Label text="Loading data..." class="subtitle" marginTop="12" />
             </StackLayout>
 
-            <!-- Error state -->
+            <!-- Error state (dropdown load failure only — no data loaded yet) -->
             <StackLayout visibility="{{ hasError &amp;&amp; clientNames.length === 0 ? 'visible' : 'collapsed' }}"
                          verticalAlignment="middle" horizontalAlignment="center" marginTop="80" padding="32">
                 <Label text="⚠️" fontSize="48" textAlignment="center" />
@@ -26,8 +26,8 @@
                 <Button text="Retry" tap="{{ onRetryTap }}" class="btn-primary" width="160" />
             </StackLayout>
 
-            <!-- Form -->
-            <StackLayout visibility="{{ !isLoadingDropdowns ? 'visible' : 'collapsed' }}">
+            <!-- Fix #2: form hidden while loading OR when a dropdown error occurred (no data available) -->
+            <StackLayout visibility="{{ !isLoadingDropdowns &amp;&amp; !(hasError &amp;&amp; clientNames.length === 0) ? 'visible' : 'collapsed' }}">
 
                 <!-- Customer picker -->
                 <Label text="Customer" class="label-field" />
@@ -99,7 +99,7 @@
                 <StackLayout height="16"
                              visibility="{{ showDestinationSuggestions ? 'collapsed' : 'visible' }}" />
 
-                <!-- Error message (validation / submit) -->
+                <!-- Error message (validation / submit errors only) -->
                 <Label text="{{ errorMessage }}" class="error-label" textWrap="true"
                        visibility="{{ hasError ? 'visible' : 'collapsed' }}" marginBottom="8" />
 

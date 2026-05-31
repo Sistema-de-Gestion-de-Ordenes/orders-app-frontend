@@ -1,6 +1,6 @@
 import { Observable, ObservableArray, Frame, alert } from '@nativescript/core';
-import { DeliveryService } from '../../services/delivery.service';
-import { Client, Driver } from '../../models/delivery.model';
+import { DeliveryService } from '../services/delivery.service';
+import { Client, Driver } from '../models/delivery.model';
 
 export class CreateDeliveryViewModel extends Observable {
     private _clientNames      = new ObservableArray<string>();
@@ -24,6 +24,10 @@ export class CreateDeliveryViewModel extends Observable {
     private deliveryService = new DeliveryService();
     private _clientData: Client[] = [];
     private _driverData: Driver[] = [];
+
+    // Fix #3 — two separate timers, one per field
+    private _originDebounceTimer: any = null;
+    private _destinationDebounceTimer: any = null;
 
     constructor() {
         super();
@@ -136,20 +140,26 @@ export class CreateDeliveryViewModel extends Observable {
 
     // ── Nominatim autocomplete ────────────────────────────────────────────────
 
-    private _debounceTimer: any = null;
-
     private fetchSuggestions(query: string, field: 'origin' | 'destination'): void {
-        if (this._debounceTimer) clearTimeout(this._debounceTimer);
+        // Fix #3 — each field has its own timer, typing in one doesn't cancel the other
+        if (field === 'origin') {
+            if (this._originDebounceTimer) clearTimeout(this._originDebounceTimer);
+        } else {
+            if (this._destinationDebounceTimer) clearTimeout(this._destinationDebounceTimer);
+        }
+
         if (!query || query.length < 3) {
             if (field === 'origin') this.showOriginSuggestions = false;
             else this.showDestinationSuggestions = false;
             return;
         }
 
-        this._debounceTimer = setTimeout(async () => {
+        const timer = setTimeout(async () => {
             try {
                 const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=4&countrycodes=cr`;
-                const response = await fetch(url);
+                const response = await fetch(url, {
+                    headers: { 'User-Agent': 'DeliveryMobileApp/1.0' }
+                });
                 const data = await response.json();
                 const suggestions: string[] = data.map((item: any) => item.display_name);
 
@@ -166,6 +176,10 @@ export class CreateDeliveryViewModel extends Observable {
                 // Silently fail — autocomplete is a convenience, not required
             }
         }, 400);
+
+        // Fix #3 — store in the correct timer variable
+        if (field === 'origin') this._originDebounceTimer = timer;
+        else this._destinationDebounceTimer = timer;
     }
 
     onOriginSuggestionTap(args: any): void {
