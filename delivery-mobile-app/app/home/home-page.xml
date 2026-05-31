@@ -1,10 +1,90 @@
 <Page navigatingTo="onNavigatingTo" xmlns="http://schemas.nativescript.org/tns.xsd">
-    
-    <ActionBar>
-        <Label text="Home" />
+
+    <ActionBar title="Deliveries" flat="true" backgroundColor="#FFFFFF">
+        <ActionBar.titleView>
+            <Label text="Deliveries" fontSize="20" fontWeight="bold" color="#1A1A1A" />
+        </ActionBar.titleView>
     </ActionBar>
 
-    <GridLayout>
-        <!-- Add your page content here -->
+    <GridLayout rows="*">
+
+        <!-- Loading state -->
+        <StackLayout row="0" verticalAlignment="middle" horizontalAlignment="center"
+                     visibility="{{ isLoading ? 'visible' : 'collapsed' }}">
+            <ActivityIndicator busy="true" color="#4CAF50" width="48" height="48" />
+            <Label text="Loading deliveries..." class="subtitle" marginTop="12" />
+        </StackLayout>
+
+        <!-- Error state -->
+        <StackLayout row="0" verticalAlignment="middle" horizontalAlignment="center"
+                     visibility="{{ hasError ? 'visible' : 'collapsed' }}" padding="32">
+            <Label text="⚠️" fontSize="48" textAlignment="center" />
+            <Label text="{{ errorMessage }}" class="subtitle" textWrap="true"
+                   textAlignment="center" marginTop="8" marginBottom="16" />
+            <Button text="Retry" tap="{{ onRetryTap }}" class="btn-primary"
+                    width="160" />
+        </StackLayout>
+
+        <!-- Empty state -->
+        <StackLayout row="0" verticalAlignment="middle" horizontalAlignment="center"
+                     visibility="{{ isEmpty ? 'visible' : 'collapsed' }}" padding="32">
+            <Label text="📦" fontSize="64" textAlignment="center" />
+            <Label text="No deliveries registered" class="title"
+                   textAlignment="center" marginTop="16" marginBottom="8" />
+            <Label text="Tap the + button to create your first delivery."
+                   class="subtitle" textWrap="true" textAlignment="center" />
+        </StackLayout>
+
+        <!-- Deliveries list -->
+        <ListView row="0" items="{{ deliveries }}" itemTap="{{ onDeliveryTap }}"
+                  separatorColor="transparent"
+                  visibility="{{ !isLoading &amp;&amp; !hasError &amp;&amp; !isEmpty ? 'visible' : 'collapsed' }}">
+            <ListView.itemTemplate>
+                <GridLayout rows="auto" columns="*" margin="12 16 0 16"
+                            backgroundColor="#FFFFFF" borderRadius="12"
+                            borderWidth="1" borderColor="#E0E0E0" padding="16">
+
+                    <StackLayout col="0">
+                        <!-- Client & Driver -->
+                        <GridLayout columns="*, auto" marginBottom="8">
+                            <Label col="0" text="{{ client }}" fontSize="15"
+                                   fontWeight="bold" color="#1A1A1A" />
+                            <!-- Status badge -->
+                            <StackLayout col="1" backgroundColor="{{ statusColor }}"
+                                         borderRadius="8" padding="3 10">
+                                <Label text="{{ statusLabel }}" fontSize="11"
+                                       fontWeight="bold" color="{{ statusTextColor }}"
+                                       textAlignment="center" />
+                            </StackLayout>
+                        </GridLayout>
+
+                        <!-- Driver -->
+                        <GridLayout columns="auto, *" marginBottom="6">
+                            <Label col="0" text="🚗 " fontSize="13" />
+                            <Label col="1" text="{{ driver }}" fontSize="13"
+                                   color="#757575" />
+                        </GridLayout>
+
+                        <!-- Route -->
+                        <GridLayout columns="auto, *">
+                            <Label col="0" text="📍 " fontSize="13" />
+                            <Label col="1" text="{{ route }}" fontSize="13"
+                                   color="#757575" textWrap="true" />
+                        </GridLayout>
+                    </StackLayout>
+
+                </GridLayout>
+            </ListView.itemTemplate>
+        </ListView>
+
+        <!-- FAB -->
+        <StackLayout row="0" verticalAlignment="bottom" horizontalAlignment="right"
+                     margin="0 24 24 0">
+            <Button text="+" tap="{{ onAddTap }}"
+                    width="56" height="56" borderRadius="28"
+                    fontSize="28" fontWeight="bold"
+                    color="#FFFFFF" backgroundColor="#4CAF50" />
+        </StackLayout>
+
     </GridLayout>
 </Page>
