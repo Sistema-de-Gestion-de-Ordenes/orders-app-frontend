@@ -9,5 +9,6 @@ export const API_CONFIG = {
         DELIVERIES: '/deliveries',
         CLIENTS:    '/clients',
         DRIVERS:    '/drivers',
+        CREATE_CLIENT: '/clients',
     }
 };
