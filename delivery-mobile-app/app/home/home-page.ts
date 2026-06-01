@@ -12,6 +12,10 @@ export function onNavigatingTo(args: NavigatedData) {
   page.bindingContext = new HomeViewModel()
 }
 
-export function onGoToCreateClient() {
+export function onGoToClientes() {
   Frame.topmost().navigate({ moduleName: 'clients/create-client-page' })
 }
+
+export function onGoToEntregas() {}
+export function onGoToRepartidores() {}
+export function onGoToPerfil() {}

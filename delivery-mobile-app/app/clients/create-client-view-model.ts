@@ -1,4 +1,4 @@
-import { Observable, ImageSource, Frame } from '@nativescript/core';
+import { Observable, ImageSource, Frame, knownFolders, path } from '@nativescript/core';
 import { requestPermissions, takePicture } from '@nativescript/camera';
 import { ImagePicker } from '@nativescript/imagepicker';
 import { ClientService } from '../services/client.service';
@@ -66,7 +66,9 @@ get profilePhotoSource(): ImageSource | null { return this._profilePhotoSource; 
             await requestPermissions();
             const photo = await takePicture({ saveToGallery: false, allowsEditing: false });
             const source = await ImageSource.fromAsset(photo);
-            this._profilePhotoPath = photo.android as string ?? '';
+            const filePath = path.join(knownFolders.temp().path, `photo_${Date.now()}.jpg`);
+            source.saveToFile(filePath, 'jpg');
+            this._profilePhotoPath = filePath;
             this.profilePhotoSource = source;
         } catch (error: any) {
             this.errorMessage = 'No se pudo acceder a la cámara.';
@@ -81,7 +83,9 @@ get profilePhotoSource(): ImageSource | null { return this._profilePhotoSource; 
             if (selection.length > 0) {
                 const selected = selection[0];
                 const source = await ImageSource.fromAsset(selected.asset);
-                this._profilePhotoPath = selected.path;
+                const filePath = path.join(knownFolders.temp().path, `photo_${Date.now()}.jpg`);
+                source.saveToFile(filePath, 'jpg');
+                this._profilePhotoPath = filePath;
                 this.profilePhotoSource = source;
             }
         } catch (error: any) {
@@ -105,7 +109,7 @@ get profilePhotoSource(): ImageSource | null { return this._profilePhotoSource; 
                 email: this._email.trim(),
                 password: this._password,
                 phone: this._phone.trim(),
-                profilePhotoPath: this._profilePhotoPath,
+                profilePhotoPath: this._profilePhotoPath!,
             });
 
             this.showSuccess = true;
@@ -132,6 +136,10 @@ get profilePhotoSource(): ImageSource | null { return this._profilePhotoSource; 
         }
         if (!this._phone.trim()) {
             this.errorMessage = 'El teléfono es requerido.';
+            return false;
+        }
+        if (!this._profilePhotoPath) {
+            this.errorMessage = 'La foto de perfil es requerida.';
             return false;
         }
         this.errorMessage = '';

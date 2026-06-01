@@ -1,4 +1,4 @@
-import { Http, ApplicationSettings, File } from '@nativescript/core';
+import { ApplicationSettings, Http, ImageSource } from '@nativescript/core';
 import { API_CONFIG } from '../config/api.config';
 
 export interface ClientData {
@@ -6,50 +6,63 @@ export interface ClientData {
     email: string;
     password: string;
     phone: string;
-    profilePhotoPath: string | null;
+    profilePhotoPath: string;
 }
 
 export class ClientService {
     async createClient(data: ClientData): Promise<void> {
-        const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CREATE_CLIENT}`;
+        const url   = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CREATE_CLIENT}`;
         const token = ApplicationSettings.getString('auth_token') ?? '';
         const boundary = `----FormBoundary${Date.now().toString(16)}`;
-        const CRLF = '\r\n';
+        const CRLF    = '\r\n';
+        const encoder = new TextEncoder();
+        const parts: Uint8Array[] = [];
 
-        const addTextField = (name: string, value: string): string =>
-            `--${boundary}${CRLF}` +
-            `Content-Disposition: form-data; name="${name}"${CRLF}${CRLF}` +
-            `${value}${CRLF}`;
-
-        let body = '';
-        body += addTextField('Name', data.name);
-        body += addTextField('Email', data.email);
-        body += addTextField('Phone', data.phone);
-        body += addTextField('Password', data.password);
-
-        if (data.profilePhotoPath) {
-            const imageFile = File.fromPath(data.profilePhotoPath);
-            const ext = data.profilePhotoPath.toLowerCase().endsWith('.png') ? 'png' : 'jpg';
-            const mime = ext === 'png' ? 'image/png' : 'image/jpeg';
-            const fileContent = imageFile.readTextSync();
-
-            body +=
+        const addField = (name: string, value: string) => {
+            parts.push(encoder.encode(
                 `--${boundary}${CRLF}` +
-                `Content-Disposition: form-data; name="Photo"; filename="photo.${ext}"${CRLF}` +
-                `Content-Type: ${mime}${CRLF}${CRLF}` +
-                `${fileContent}${CRLF}`;
-        }
+                `Content-Disposition: form-data; name="${name}"${CRLF}${CRLF}` +
+                `${value}${CRLF}`
+            ));
+        };
 
-        body += `--${boundary}--${CRLF}`;
+        addField('Name',     data.name);
+        addField('Email',    data.email);
+        addField('Phone',    data.phone);
+        addField('Password', data.password);
+
+        // Photo as binary via base64 → Uint8Array
+        const ext    = data.profilePhotoPath.toLowerCase().endsWith('.png') ? 'png' : 'jpg';
+        const mime   = ext === 'png' ? 'image/png' : 'image/jpeg';
+        const source = ImageSource.fromFileSync(data.profilePhotoPath);
+        const b64    = source.toBase64String(ext as 'jpg' | 'png');
+        const bin    = atob(b64);
+        const imgBytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) { imgBytes[i] = bin.charCodeAt(i); }
+
+        parts.push(encoder.encode(
+            `--${boundary}${CRLF}` +
+            `Content-Disposition: form-data; name="Photo"; filename="photo.${ext}"${CRLF}` +
+            `Content-Type: ${mime}${CRLF}${CRLF}`
+        ));
+        parts.push(imgBytes);
+        parts.push(encoder.encode(CRLF));
+        parts.push(encoder.encode(`--${boundary}--${CRLF}`));
+
+        // Combine all parts into a single ArrayBuffer
+        const totalLength = parts.reduce((s, p) => s + p.length, 0);
+        const body = new Uint8Array(totalLength);
+        let offset = 0;
+        for (const p of parts) { body.set(p, offset); offset += p.length; }
 
         const response = await Http.request({
             url,
-            method: 'POST',
+            method:  'POST',
             headers: {
-                'Content-Type': `multipart/form-data; boundary=${boundary}`,
+                'Content-Type':  `multipart/form-data; boundary=${boundary}`,
                 'Authorization': `Bearer ${token}`,
             },
-            content: body,
+            content: body.buffer as any,
         });
 
         const raw = response.content?.toJSON?.() ?? null;
