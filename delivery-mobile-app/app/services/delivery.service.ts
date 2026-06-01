@@ -34,40 +34,61 @@ export class DeliveryService {
         });
         if (response.statusCode < 200 || response.statusCode >= 300) {
             const data = response.content.toJSON();
-            throw new Error(data?.error ?? 'Failed to create delivery. Please try again.');
+            const raw = response.content.toString().trim();
+            let message = 'Failed to create delivery. Please try again.';
+            if (raw) {
+                try {
+                    const data = JSON.parse(raw);
+                    message = data?.error ?? message;
+                } catch {}
+            }
+            throw new Error(message);
         }
     }
 
-    // ── Clients — hardcoded until GET /clients is available ──────────────────
+    // ── Clients ───────────────────────────────────────────────────────────────
+    // TODO: when GET /clients is available, replace the
+    //       return Promise.resolve([...]) block with the real call commented below.
 
     async getClients(): Promise<Client[]> {
-        // TODO: replace with real API call when GET /clients endpoint is ready
+        // ── REPLACE WHEN ENDPOINT IS AVAILABLE ───────────────────────────────
         // const response = await Http.request({
         //     url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CLIENTS}`,
         //     method: 'GET',
         //     headers: this.getAuthHeaders(),
         // });
+        // if (response.statusCode < 200 || response.statusCode >= 300) {
+        //     throw new Error('Failed to load client list.');
+        // }
         // return response.content.toJSON() as Client[];
+        // ─────────────────────────────────────────────────────────────────────
 
         return Promise.resolve([
-            { id: 1, name: 'Cliente Test', email: 'test@test.com', phone: '88001111' },
-            { id: 2, name: 'Admin',        email: 'admin@test.com', phone: '88002222' },
+            { id: 1, name: 'Cliente Test', email: '', phone: '' },
+            { id: 2, name: 'Admin',        email: '', phone: '' },
+            { id: 3, name: 'Admin Yeye',   email: '', phone: '' },
         ]);
     }
 
-    // ── Drivers — hardcoded until GET /drivers is available ──────────────────
+    // ── Drivers ───────────────────────────────────────────────────────────────
+    // TODO: when GET /drivers is available, replace the
+    //       return Promise.resolve([...]) block with the real call commented below.
 
     async getDrivers(): Promise<Driver[]> {
-        // TODO: replace with real API call when GET /drivers endpoint is ready
+        // ── REPLACE WHEN ENDPOINT IS AVAILABLE ───────────────────────────────
         // const response = await Http.request({
         //     url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DRIVERS}`,
         //     method: 'GET',
         //     headers: this.getAuthHeaders(),
         // });
+        // if (response.statusCode < 200 || response.statusCode >= 300) {
+        //     throw new Error('Failed to load driver list.');
+        // }
         // return response.content.toJSON() as Driver[];
+        // ─────────────────────────────────────────────────────────────────────
 
         return Promise.resolve([
-            { id: 1, name: 'Driver Test', vehicle: 'Toyota Corolla', plates: 'ABC123' },
+            { id: 1, name: 'Driver Test', vehicle: '', plates: '' },
         ]);
     }
 }

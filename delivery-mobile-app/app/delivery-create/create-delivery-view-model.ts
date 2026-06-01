@@ -2,56 +2,63 @@ import { Observable, ObservableArray, Frame, alert } from '@nativescript/core';
 import { DeliveryService } from '../services/delivery.service';
 import { Client, Driver } from '../models/delivery.model';
 
-export class CreateDeliveryViewModel extends Observable {
-    private _clientNames      = new ObservableArray<string>();
-    private _driverNames      = new ObservableArray<string>();
+// ── Internal types for list items ────────────────────────────────────────────
+// Each item exposes `isSelected` so the XML can toggle the radio button color.
 
+interface ClientItem {
+    id: number;
+    label: string;       // display name
+    isSelected: boolean;
+}
+
+interface DriverItem {
+    id: number;
+    label: string;       // "Name — Vehicle (Plates)"
+    isSelected: boolean;
+}
+
+export class CreateDeliveryViewModel extends Observable {
+
+    // ── ListView arrays ───────────────────────────────────────────────────────
+    private _clients = new ObservableArray<ClientItem>();
+    private _drivers = new ObservableArray<DriverItem>();
+
+    // Currently selected index
     private _selectedClientIndex: number = 0;
     private _selectedDriverIndex: number = 0;
+
+    // ── Route fields ──────────────────────────────────────────────────────────
     private _origin: string = '';
     private _destination: string = '';
 
     private _originSuggestions      = new ObservableArray<string>();
     private _destinationSuggestions = new ObservableArray<string>();
-    private _showOriginSuggestions: boolean = false;
-    private _showDestinationSuggestions: boolean = false;
+    private _showOriginSuggestions      = false;
+    private _showDestinationSuggestions = false;
 
-    private _isLoadingDropdowns: boolean = false;
-    private _isSubmitting: boolean = false;
-    private _hasError: boolean = false;
-    private _errorMessage: string = '';
+    private _originDebounceTimer:      any = null;
+    private _destinationDebounceTimer: any = null;
+
+    // ── UI state ──────────────────────────────────────────────────────────────
+    private _isLoadingDropdowns = false;
+    private _isSubmitting       = false;
+    private _hasError           = false;
+    private _errorMessage       = '';
 
     private deliveryService = new DeliveryService();
-    private _clientData: Client[] = [];
-    private _driverData: Driver[] = [];
-
-    // Fix #3 — two separate timers, one per field
-    private _originDebounceTimer: any = null;
-    private _destinationDebounceTimer: any = null;
 
     constructor() {
         super();
         this.loadDropdowns();
     }
 
-    // ── Getters / Setters ─────────────────────────────────────────────────────
+    // ── Getters exposed to the XML ────────────────────────────────────────────
 
-    get clientNames(): ObservableArray<string> { return this._clientNames; }
-    get driverNames(): ObservableArray<string> { return this._driverNames; }
-    get originSuggestions(): ObservableArray<string> { return this._originSuggestions; }
+    get clients(): ObservableArray<ClientItem> { return this._clients; }
+    get drivers(): ObservableArray<DriverItem> { return this._drivers; }
+
+    get originSuggestions():      ObservableArray<string> { return this._originSuggestions; }
     get destinationSuggestions(): ObservableArray<string> { return this._destinationSuggestions; }
-
-    get selectedClientIndex(): number { return this._selectedClientIndex; }
-    set selectedClientIndex(value: number) {
-        this._selectedClientIndex = value;
-        this.notifyPropertyChange('selectedClientIndex', value);
-    }
-
-    get selectedDriverIndex(): number { return this._selectedDriverIndex; }
-    set selectedDriverIndex(value: number) {
-        this._selectedDriverIndex = value;
-        this.notifyPropertyChange('selectedDriverIndex', value);
-    }
 
     get origin(): string { return this._origin; }
     set origin(value: string) {
@@ -103,7 +110,7 @@ export class CreateDeliveryViewModel extends Observable {
         this.notifyPropertyChange('errorMessage', value);
     }
 
-    // ── Load dropdowns ────────────────────────────────────────────────────────
+    // ── Data loading (mock data or real API in the future) ────────────────────
 
     async loadDropdowns(): Promise<void> {
         this.isLoadingDropdowns = true;
@@ -115,20 +122,27 @@ export class CreateDeliveryViewModel extends Observable {
                 this.deliveryService.getDrivers(),
             ]);
 
-            this._clientData = clients;
-            this._driverData = drivers;
+            this._clients.splice(0, this._clients.length);
+            this._drivers.splice(0, this._drivers.length);
 
-            this._clientNames.splice(0, this._clientNames.length);
-            this._driverNames.splice(0, this._driverNames.length);
+            clients.forEach((c, i) => this._clients.push({
+                id:         c.id,
+                label:      c.name,
+                isSelected: i === 0,
+            }));
 
-            clients.forEach(c => this._clientNames.push(c.name));
-            drivers.forEach(d => this._driverNames.push(`${d.name} — ${d.vehicle} (${d.plates})`));
+            drivers.forEach((d, i) => this._drivers.push({
+                id:         d.id,
+                label:      `${d.name} — ${d.vehicle} (${d.plates})`,
+                isSelected: i === 0,
+            }));
 
-            this.selectedClientIndex = 0;
-            this.selectedDriverIndex = 0;
+            this._selectedClientIndex = 0;
+            this._selectedDriverIndex = 0;
+
         } catch (error: any) {
             this.hasError = true;
-            this.errorMessage = error.message ?? 'Failed to load data. Please try again.';
+            this.errorMessage = error.message ?? 'No se pudieron cargar los datos. Intenta de nuevo.';
         } finally {
             this.isLoadingDropdowns = false;
         }
@@ -138,10 +152,41 @@ export class CreateDeliveryViewModel extends Observable {
         this.loadDropdowns();
     }
 
+    // ── Client selection via tap ──────────────────────────────────────────────
+    // The XML uses itemTap="onClientTap" on the clients ListView.
+
+    onClientTap(args: any): void {
+        const newIndex: number = args.index;
+        if (newIndex === this._selectedClientIndex) return;
+
+        // Deselect the previous item and select the new one
+        const prev = this._clients.getItem(this._selectedClientIndex);
+        this._clients.setItem(this._selectedClientIndex, { ...prev, isSelected: false });
+
+        const next = this._clients.getItem(newIndex);
+        this._clients.setItem(newIndex, { ...next, isSelected: true });
+
+        this._selectedClientIndex = newIndex;
+    }
+
+    // ── Driver selection via tap ──────────────────────────────────────────────
+
+    onDriverTap(args: any): void {
+        const newIndex: number = args.index;
+        if (newIndex === this._selectedDriverIndex) return;
+
+        const prev = this._drivers.getItem(this._selectedDriverIndex);
+        this._drivers.setItem(this._selectedDriverIndex, { ...prev, isSelected: false });
+
+        const next = this._drivers.getItem(newIndex);
+        this._drivers.setItem(newIndex, { ...next, isSelected: true });
+
+        this._selectedDriverIndex = newIndex;
+    }
+
     // ── Nominatim autocomplete ────────────────────────────────────────────────
 
     private fetchSuggestions(query: string, field: 'origin' | 'destination'): void {
-        // Fix #3 — each field has its own timer, typing in one doesn't cancel the other
         if (field === 'origin') {
             if (this._originDebounceTimer) clearTimeout(this._originDebounceTimer);
         } else {
@@ -158,7 +203,7 @@ export class CreateDeliveryViewModel extends Observable {
             try {
                 const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=4&countrycodes=cr`;
                 const response = await fetch(url, {
-                    headers: { 'User-Agent': 'DeliveryMobileApp/1.0' }
+                    headers: { 'User-Agent': 'DeliveryMobileApp/1.0' },
                 });
                 const data = await response.json();
                 const suggestions: string[] = data.map((item: any) => item.display_name);
@@ -173,11 +218,10 @@ export class CreateDeliveryViewModel extends Observable {
                     this.showDestinationSuggestions = suggestions.length > 0;
                 }
             } catch {
-                // Silently fail — autocomplete is a convenience, not required
+                // Autocomplete is optional — fail silently
             }
         }, 400);
 
-        // Fix #3 — store in the correct timer variable
         if (field === 'origin') this._originDebounceTimer = timer;
         else this._destinationDebounceTimer = timer;
     }
@@ -199,11 +243,12 @@ export class CreateDeliveryViewModel extends Observable {
     // ── Validation ────────────────────────────────────────────────────────────
 
     private validate(): string | null {
-        if (this._clientData.length === 0) return 'No customers available.';
-        if (this._driverData.length === 0) return 'No drivers available.';
-        if (!this._origin.trim())          return 'Please enter an origin address.';
-        if (!this._destination.trim())     return 'Please enter a destination address.';
-        if (this._origin.trim() === this._destination.trim()) return 'Origin and destination cannot be the same.';
+        if (this._clients.length === 0)  return 'No hay clientes disponibles.';
+        if (this._drivers.length === 0)  return 'No hay repartidores disponibles.';
+        if (!this._origin.trim())        return 'Por favor ingresa la dirección de origen.';
+        if (!this._destination.trim())   return 'Por favor ingresa la dirección de destino.';
+        if (this._origin.trim() === this._destination.trim())
+            return 'El origen y el destino no pueden ser iguales.';
         return null;
     }
 
@@ -220,20 +265,21 @@ export class CreateDeliveryViewModel extends Observable {
         this.isSubmitting = true;
         this.hasError = false;
 
-        const clientId = this._clientData[this._selectedClientIndex].id;
-        const driverId = this._driverData[this._selectedDriverIndex].id;
+        // Read ids directly from the selected items
+        const clientItem = this._clients.getItem(this._selectedClientIndex);
+        const driverItem = this._drivers.getItem(this._selectedDriverIndex);
 
         try {
             await this.deliveryService.createDelivery({
-                clientId,
-                driverId,
+                clientId:    clientItem.id,
+                driverId:    driverItem.id,
                 origin:      this._origin.trim(),
                 destination: this._destination.trim(),
             });
 
             await alert({
-                title:        'Success',
-                message:      'Delivery created successfully.',
+                title:        'Éxito',
+                message:      'Entrega creada correctamente.',
                 okButtonText: 'OK',
             });
 
@@ -243,7 +289,7 @@ export class CreateDeliveryViewModel extends Observable {
             });
         } catch (error: any) {
             this.hasError = true;
-            this.errorMessage = error.message ?? 'Failed to create delivery. Please try again.';
+            this.errorMessage = error.message ?? 'No se pudo crear la entrega. Intenta de nuevo.';
         } finally {
             this.isSubmitting = false;
         }
