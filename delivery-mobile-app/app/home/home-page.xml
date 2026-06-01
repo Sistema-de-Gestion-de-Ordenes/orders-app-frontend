@@ -40,37 +40,133 @@
                   separatorColor="transparent"
                   visibility="{{ !isLoading &amp;&amp; !hasError &amp;&amp; !isEmpty ? 'visible' : 'collapsed' }}">
             <ListView.itemTemplate>
-                <GridLayout rows="auto" columns="*" margin="12 16 0 16"
-                            backgroundColor="#FFFFFF" borderRadius="12"
-                            borderWidth="1" borderColor="#E0E0E0" padding="16">
+                <GridLayout rows="auto" columns="*" margin="10 16 0 16"
+                            backgroundColor="#FFFFFF" borderRadius="16"
+                            borderWidth="1" borderColor="#EEEEEE" padding="0"
+                            androidElevation="3">
 
-                    <StackLayout col="0">
-                        <!-- Client & Driver -->
-                        <GridLayout columns="*, auto" marginBottom="8">
-                            <Label col="0" text="{{ client }}" fontSize="15"
-                                   fontWeight="bold" color="#1A1A1A" />
-                            <!-- Status badge -->
+                    <StackLayout col="0" padding="0">
+
+                        <!-- Header: ID + Status badge -->
+                        <GridLayout columns="*, auto" padding="14 14 10 14">
+                            <StackLayout col="0" orientation="horizontal">
+                                <Label text="📦 " fontSize="14" verticalAlignment="middle" />
+                                <Label text="Entrega #" fontSize="12" color="#9E9E9E"
+                                       verticalAlignment="middle" />
+                                <Label text="{{ id }}" fontSize="12" fontWeight="bold"
+                                       color="#9E9E9E" verticalAlignment="middle" />
+                            </StackLayout>
                             <StackLayout col="1" backgroundColor="{{ statusColor }}"
-                                         borderRadius="8" padding="3 10">
+                                         borderRadius="20" padding="4 12"
+                                         verticalAlignment="center">
                                 <Label text="{{ statusLabel }}" fontSize="11"
                                        fontWeight="bold" color="{{ statusTextColor }}"
                                        textAlignment="center" />
                             </StackLayout>
                         </GridLayout>
 
-                        <!-- Driver -->
-                        <GridLayout columns="auto, *" marginBottom="6">
-                            <Label col="0" text="🚗 " fontSize="13" />
-                            <Label col="1" text="{{ driver }}" fontSize="13"
-                                   color="#757575" />
-                        </GridLayout>
+                        <!-- Divider -->
+                        <StackLayout height="1" backgroundColor="#F5F5F5" marginBottom="10" />
 
-                        <!-- Route -->
-                        <GridLayout columns="auto, *">
-                            <Label col="0" text="📍 " fontSize="13" />
-                            <Label col="1" text="{{ route }}" fontSize="13"
-                                   color="#757575" textWrap="true" />
-                        </GridLayout>
+                        <!-- Participantes -->
+                        <StackLayout padding="0 14 0 14" marginBottom="10">
+
+                            <!-- Label sección -->
+                            <Label text="PARTICIPANTES" fontSize="10" fontWeight="bold"
+                                   color="#BDBDBD" letterSpacing="1" marginBottom="8" />
+
+                            <!-- Cliente row -->
+                            <GridLayout columns="auto, *" marginBottom="8">
+                                <StackLayout col="0" width="36" height="36" borderRadius="18"
+                                             backgroundColor="#E8F5E9"
+                                             verticalAlignment="middle"
+                                             horizontalAlignment="center"
+                                             margin="0 10 0 0">
+                                    <Label text="👤" fontSize="16" textAlignment="center"
+                                           verticalAlignment="middle" />
+                                </StackLayout>
+                                <StackLayout col="1" verticalAlignment="middle">
+                                    <Label text="CLIENTE" fontSize="9" fontWeight="bold"
+                                           color="#BDBDBD" letterSpacing="0.5" />
+                                    <Label text="{{ client }}" fontSize="13" fontWeight="bold"
+                                           color="#212121" />
+                                </StackLayout>
+                            </GridLayout>
+
+                            <!-- Repartidor row -->
+                            <GridLayout columns="auto, *">
+                                <StackLayout col="0" width="36" height="36" borderRadius="18"
+                                             backgroundColor="#FFF8E1"
+                                             verticalAlignment="middle"
+                                             horizontalAlignment="center"
+                                             margin="0 10 0 0">
+                                    <Label text="🚚" fontSize="16" textAlignment="center"
+                                           verticalAlignment="middle" />
+                                </StackLayout>
+                                <StackLayout col="1" verticalAlignment="middle">
+                                    <Label text="REPARTIDOR" fontSize="9" fontWeight="bold"
+                                           color="#BDBDBD" letterSpacing="0.5" />
+                                    <Label text="{{ driver }}" fontSize="13" fontWeight="bold"
+                                           color="#212121" />
+                                </StackLayout>
+                            </GridLayout>
+
+                        </StackLayout>
+
+                        <!-- Divider -->
+                        <StackLayout height="1" backgroundColor="#F5F5F5" marginBottom="10" />
+
+                        <!-- Ruta de entrega -->
+                        <StackLayout padding="0 14 14 14">
+
+                            <!-- Label sección -->
+                            <Label text="RUTA DE ENTREGA" fontSize="10" fontWeight="bold"
+                                   color="#BDBDBD" letterSpacing="1" marginBottom="10" />
+
+                            <!-- Origen -->
+                            <GridLayout columns="auto, *" marginBottom="4">
+                                <StackLayout col="0" width="28" height="28" borderRadius="14"
+                                             backgroundColor="#E8F5E9"
+                                             verticalAlignment="middle"
+                                             horizontalAlignment="center"
+                                             margin="0 10 0 0">
+                                    <Label text="📍" fontSize="13" textAlignment="center"
+                                           verticalAlignment="middle" />
+                                </StackLayout>
+                                <StackLayout col="1" verticalAlignment="middle">
+                                    <Label text="ORIGEN" fontSize="9" color="#BDBDBD"
+                                           letterSpacing="0.5" fontWeight="bold" />
+                                    <Label text="{{ origin }}" fontSize="12" color="#424242"
+                                           textWrap="true" />
+                                </StackLayout>
+                            </GridLayout>
+
+                            <!-- Arrow connector -->
+                            <StackLayout margin="0 0 0 9" marginBottom="4">
+                                <Label text="↓" fontSize="16" color="#4CAF50"
+                                       textAlignment="left" margin="0 0 0 5" />
+                            </StackLayout>
+
+                            <!-- Destino -->
+                            <GridLayout columns="auto, *">
+                                <StackLayout col="0" width="28" height="28" borderRadius="14"
+                                             backgroundColor="#FCE4EC"
+                                             verticalAlignment="middle"
+                                             horizontalAlignment="center"
+                                             margin="0 10 0 0">
+                                    <Label text="🎯" fontSize="13" textAlignment="center"
+                                           verticalAlignment="middle" />
+                                </StackLayout>
+                                <StackLayout col="1" verticalAlignment="middle">
+                                    <Label text="DESTINO" fontSize="9" color="#BDBDBD"
+                                           letterSpacing="0.5" fontWeight="bold" />
+                                    <Label text="{{ destination }}" fontSize="12" color="#424242"
+                                           textWrap="true" />
+                                </StackLayout>
+                            </GridLayout>
+
+                        </StackLayout>
+
                     </StackLayout>
 
                 </GridLayout>
