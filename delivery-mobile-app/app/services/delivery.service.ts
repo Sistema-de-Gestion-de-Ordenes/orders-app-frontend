@@ -1,6 +1,6 @@
 import { Http, ApplicationSettings } from '@nativescript/core';
 import { API_CONFIG } from '../config/api.config';
-import { Client, Driver, CreateDeliveryRequest, Delivery } from '../models/delivery.model';
+import { Client, Driver, CreateDeliveryRequest, Delivery, DeliveryDetail } from '../models/delivery.model';
 
 export class DeliveryService {
     private getAuthHeaders(): Record<string, string> {
@@ -23,6 +23,18 @@ export class DeliveryService {
             throw new Error('Failed to load deliveries. Please try again.');
         }
         return response.content.toJSON() as Delivery[];
+    }
+
+    async getDeliveryById(id: number): Promise<DeliveryDetail> {
+        const response = await Http.request({
+            url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DELIVERIES}/${id}`,
+            method: 'GET',
+            headers: this.getAuthHeaders(),
+        });
+        if (response.statusCode < 200 || response.statusCode >= 300) {
+            throw new Error('No se pudo cargar el detalle de la entrega.');
+        }
+        return response.content.toJSON() as DeliveryDetail;
     }
 
     async createDelivery(payload: CreateDeliveryRequest): Promise<void> {
