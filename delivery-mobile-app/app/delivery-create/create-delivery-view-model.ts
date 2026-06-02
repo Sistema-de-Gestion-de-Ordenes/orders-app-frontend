@@ -296,6 +296,9 @@ export class CreateDeliveryViewModel extends Observable {
     }
 
     onCancelTap(): void {
-        Frame.topmost().goBack();
+        Frame.topmost().navigate({
+        moduleName: 'home/home-page',
+        clearHistory: true,
+    });
     }
 }
