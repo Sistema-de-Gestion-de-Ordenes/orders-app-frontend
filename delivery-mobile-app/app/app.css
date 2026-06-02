@@ -135,6 +135,14 @@
     text-align: center;
 }
 
+/* ── Address suggestions ─────────────────────────────── */
+.suggestion-item {
+    font-size: 13;
+    color: #1A1A1A;
+    padding: 12 16;
+    background-color: #FFFFFF;
+}
+
 /* ── Secondary Button ────────────────────────────────── */
 .btn-secondary {
     font-size: 13;
