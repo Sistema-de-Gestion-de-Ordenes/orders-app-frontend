@@ -33,7 +33,6 @@ export class DeliveryService {
             content: JSON.stringify(payload),
         });
         if (response.statusCode < 200 || response.statusCode >= 300) {
-            const data = response.content.toJSON();
             const raw = response.content.toString().trim();
             let message = 'Failed to create delivery. Please try again.';
             if (raw) {
