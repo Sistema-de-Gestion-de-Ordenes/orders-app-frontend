@@ -1,4 +1,4 @@
-import { Observable } from '@nativescript/core';
+import { Observable, Frame } from '@nativescript/core';
 import { DeliveryService } from '../services/delivery.service';
 import { DeliveryDetail } from '../models/delivery.model';
 
@@ -100,7 +100,7 @@ export class DeliveryDetailViewModel extends Observable {
             this.populateData(data);
         } catch (error: any) {
             this.hasError = true;
-            this.errorMessage = error.message ?? 'Error al cargar la entrega.';
+            this.errorMessage = error.message ?? 'Failed to load delivery.';
         } finally {
             this.isLoading = false;
         }
@@ -108,6 +108,10 @@ export class DeliveryDetailViewModel extends Observable {
 
     onRetryTap(): void {
         this.loadDelivery();
+    }
+
+    onBackTap(): void {
+        Frame.topmost().goBack();
     }
 
     // ── Private ────────────────────────────────────────────────────────────────

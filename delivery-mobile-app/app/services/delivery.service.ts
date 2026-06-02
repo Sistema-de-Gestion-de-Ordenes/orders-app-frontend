@@ -32,7 +32,7 @@ export class DeliveryService {
             headers: this.getAuthHeaders(),
         });
         if (response.statusCode < 200 || response.statusCode >= 300) {
-            throw new Error('No se pudo cargar el detalle de la entrega.');
+            throw new Error('Failed to load delivery details. Please try again.');
         }
         return response.content.toJSON() as DeliveryDetail;
     }
