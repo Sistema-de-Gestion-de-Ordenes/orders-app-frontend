@@ -108,6 +108,14 @@
     horizontal-align: center;
 }
 
+/* ── Offline Banner ──────────────────────────────────── */
+.offline-banner {
+    background-color: #FFFFFF;
+    border-bottom-width: 1;
+    border-bottom-color: #E0E0E0;
+    padding: 6 16;
+}
+
 /* ── Bottom Navigation ───────────────────────────────── */
 .bottom-nav {
     background-color: #FFFFFF;
