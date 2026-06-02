@@ -1,0 +1,303 @@
+<Page navigatingTo="onNavigatingTo" xmlns="http://schemas.nativescript.org/tns.xsd">
+
+    <ActionBar flat="true" backgroundColor="#FFFFFF">
+        <ActionBar.titleView>
+            <Label text="Crear entrega" fontSize="18" fontWeight="bold"
+                   color="#1A1A1A" textAlignment="center" />
+        </ActionBar.titleView>
+    </ActionBar>
+
+    <ScrollView>
+        <StackLayout backgroundColor="#F7F7F7" padding="0 0 40 0">
+
+            <!-- ── Cargando ── -->
+            <StackLayout visibility="{{ isLoadingDropdowns ? 'visible' : 'collapsed' }}"
+                         verticalAlignment="middle" horizontalAlignment="center" marginTop="80">
+                <ActivityIndicator busy="true" color="#4CAF50" width="48" height="48" />
+                <Label text="Cargando datos..." fontSize="13" color="#9E9E9E"
+                       textAlignment="center" marginTop="12" />
+            </StackLayout>
+
+            <!-- ── Error de carga (sin datos) ── -->
+            <StackLayout visibility="{{ hasError &amp;&amp; clients.length === 0 ? 'visible' : 'collapsed' }}"
+                         verticalAlignment="middle" horizontalAlignment="center"
+                         marginTop="80" padding="32">
+                <Label text="⚠️" fontSize="48" textAlignment="center" />
+                <Label text="{{ errorMessage }}" fontSize="13" color="#9E9E9E"
+                       textWrap="true" textAlignment="center" marginTop="8" marginBottom="16" />
+                <Button text="Reintentar" tap="{{ onRetryTap }}" class="btn-primary" width="160" />
+            </StackLayout>
+
+            <!-- ── Formulario ── -->
+            <StackLayout visibility="{{ !isLoadingDropdowns &amp;&amp; !(hasError &amp;&amp; clients.length === 0) ? 'visible' : 'collapsed' }}">
+
+                <!-- Título sección participantes -->
+                <GridLayout columns="auto, *" padding="20 16 10 16">
+                    <StackLayout col="0" width="28" height="28" borderRadius="14"
+                                 backgroundColor="#E8F5E9"
+                                 verticalAlignment="middle" horizontalAlignment="center"
+                                 margin="0 8 0 0">
+                        <Label text="👥" fontSize="14" textAlignment="center"
+                               verticalAlignment="middle" />
+                    </StackLayout>
+                    <Label col="1" text="Participantes" fontSize="18" fontWeight="bold"
+                           color="#1A1A1A" verticalAlignment="middle" />
+                </GridLayout>
+
+                <!-- ── Card CLIENTE ── -->
+                <StackLayout margin="0 16 10 16" backgroundColor="#FFFFFF"
+                             borderRadius="14" borderWidth="1" borderColor="#EEEEEE"
+                             androidElevation="2">
+
+                    <GridLayout columns="auto, *, auto" padding="14 14 14 14">
+                        <StackLayout col="0" width="38" height="38" borderRadius="10"
+                                     backgroundColor="#FFF3E0"
+                                     verticalAlignment="middle" horizontalAlignment="center"
+                                     margin="0 12 0 0">
+                            <Label text="👤" fontSize="18" textAlignment="center"
+                                   verticalAlignment="middle" />
+                        </StackLayout>
+                        <StackLayout col="1" verticalAlignment="middle">
+                            <Label text="CLIENTE" fontSize="9" fontWeight="bold"
+                                   color="#BDBDBD" letterSpacing="1" />
+                            <Label text="Seleccionar cliente" fontSize="14"
+                                   color="#1A1A1A" fontWeight="bold" />
+                        </StackLayout>
+                        <Label col="2" text="⌄" fontSize="20" color="#9E9E9E"
+                               verticalAlignment="middle" />
+                    </GridLayout>
+
+                    <StackLayout height="1" backgroundColor="#F5F5F5" />
+
+                    <!--
+                        itemTap="onClientTap" → el ViewModel actualiza isSelected en cada ítem.
+                        El radio button reacciona al binding isSelected de cada ítem.
+                    -->
+                    <ListView items="{{ clients }}"
+                              itemTap="{{ onClientTap }}"
+                              separatorColor="#F5F5F5"
+                              height="160" margin="0">
+                        <ListView.itemTemplate>
+                            <GridLayout columns="auto, *, auto" padding="10 14">
+                                <StackLayout col="0" width="34" height="34" borderRadius="17"
+                                             backgroundColor="#F0F0F0"
+                                             verticalAlignment="middle"
+                                             horizontalAlignment="center"
+                                             margin="0 12 0 0">
+                                    <Label text="👤" fontSize="15" textAlignment="center"
+                                           verticalAlignment="middle" />
+                                </StackLayout>
+                                <Label col="1" text="{{ label }}" fontSize="14"
+                                       fontWeight="bold" color="#1A1A1A"
+                                       verticalAlignment="middle" />
+                                <!-- Radio: relleno verde si isSelected, gris si no -->
+                                <StackLayout col="2" width="22" height="22" borderRadius="11"
+                                             borderWidth="2"
+                                             borderColor="{{ isSelected ? '#4CAF50' : '#BDBDBD' }}"
+                                             backgroundColor="#FFFFFF"
+                                             verticalAlignment="middle"
+                                             horizontalAlignment="center">
+                                    <StackLayout width="12" height="12" borderRadius="6"
+                                                 backgroundColor="{{ isSelected ? '#4CAF50' : 'transparent' }}"
+                                                 verticalAlignment="middle"
+                                                 horizontalAlignment="center" />
+                                </StackLayout>
+                            </GridLayout>
+                        </ListView.itemTemplate>
+                    </ListView>
+
+                </StackLayout>
+
+                <!-- ── Card REPARTIDOR ── -->
+                <StackLayout margin="0 16 20 16" backgroundColor="#FFFFFF"
+                             borderRadius="14" borderWidth="1" borderColor="#EEEEEE"
+                             androidElevation="2">
+
+                    <GridLayout columns="auto, *, auto" padding="14 14 14 14">
+                        <StackLayout col="0" width="38" height="38" borderRadius="10"
+                                     backgroundColor="#FFF8E1"
+                                     verticalAlignment="middle" horizontalAlignment="center"
+                                     margin="0 12 0 0">
+                            <Label text="🚚" fontSize="18" textAlignment="center"
+                                   verticalAlignment="middle" />
+                        </StackLayout>
+                        <StackLayout col="1" verticalAlignment="middle">
+                            <Label text="REPARTIDOR" fontSize="9" fontWeight="bold"
+                                   color="#BDBDBD" letterSpacing="1" />
+                            <Label text="Asignar repartidor" fontSize="14"
+                                   color="#1A1A1A" fontWeight="bold" />
+                        </StackLayout>
+                        <Label col="2" text="⌄" fontSize="20" color="#9E9E9E"
+                               verticalAlignment="middle" />
+                    </GridLayout>
+
+                    <StackLayout height="1" backgroundColor="#F5F5F5" />
+
+                    <ListView items="{{ drivers }}"
+                              itemTap="{{ onDriverTap }}"
+                              separatorColor="#F5F5F5"
+                              height="160" margin="0">
+                        <ListView.itemTemplate>
+                            <GridLayout columns="auto, *, auto" padding="10 14">
+                                <StackLayout col="0" width="34" height="34" borderRadius="17"
+                                             backgroundColor="#FFF8E1"
+                                             verticalAlignment="middle"
+                                             horizontalAlignment="center"
+                                             margin="0 12 0 0">
+                                    <Label text="🚚" fontSize="15" textAlignment="center"
+                                           verticalAlignment="middle" />
+                                </StackLayout>
+                                <Label col="1" text="{{ label }}" fontSize="14"
+                                       fontWeight="bold" color="#1A1A1A"
+                                       verticalAlignment="middle" />
+                                <StackLayout col="2" width="22" height="22" borderRadius="11"
+                                             borderWidth="2"
+                                             borderColor="{{ isSelected ? '#4CAF50' : '#BDBDBD' }}"
+                                             backgroundColor="#FFFFFF"
+                                             verticalAlignment="middle"
+                                             horizontalAlignment="center">
+                                    <StackLayout width="12" height="12" borderRadius="6"
+                                                 backgroundColor="{{ isSelected ? '#4CAF50' : 'transparent' }}"
+                                                 verticalAlignment="middle"
+                                                 horizontalAlignment="center" />
+                                </StackLayout>
+                            </GridLayout>
+                        </ListView.itemTemplate>
+                    </ListView>
+
+                </StackLayout>
+
+                <!-- Título sección ruta -->
+                <GridLayout columns="auto, *" padding="4 16 12 16">
+                    <StackLayout col="0" width="28" height="28" borderRadius="14"
+                                 backgroundColor="#E8F5E9"
+                                 verticalAlignment="middle" horizontalAlignment="center"
+                                 margin="0 8 0 0">
+                        <Label text="✈" fontSize="14" color="#4CAF50"
+                               textAlignment="center" verticalAlignment="middle" />
+                    </StackLayout>
+                    <Label col="1" text="Ruta de Entrega" fontSize="18"
+                           fontWeight="bold" color="#1A1A1A" verticalAlignment="middle" />
+                </GridLayout>
+
+                <!-- ORIGEN -->
+                <Label text="PUNTO DE ORIGEN" fontSize="10" fontWeight="bold"
+                       color="#9E9E9E" letterSpacing="1" margin="0 16 6 16" />
+
+                <GridLayout columns="auto, *" margin="0 16 0 16"
+                            backgroundColor="#FFFFFF" borderRadius="12"
+                            borderWidth="1" borderColor="#E8E8E8" padding="14 14">
+                    <Label col="0" text="📍" fontSize="18" color="#4CAF50"
+                           verticalAlignment="middle" margin="0 10 0 0" />
+                    <TextField col="1" hint="Calle, ciudad o local..."
+                               text="{{ origin }}"
+                               fontSize="14" color="#1A1A1A"
+                               backgroundColor="transparent"
+                               borderWidth="0" padding="0"
+                               returnKeyType="next" />
+                </GridLayout>
+
+                <!-- Sugerencias origen -->
+                <StackLayout visibility="{{ showOriginSuggestions ? 'visible' : 'collapsed' }}"
+                             margin="0 16 0 16" backgroundColor="#FFFFFF"
+                             borderWidth="1" borderColor="#E0E0E0" borderRadius="10">
+                    <ListView items="{{ originSuggestions }}"
+                              itemTap="{{ onOriginSuggestionTap }}"
+                              separatorColor="#F5F5F5" height="160">
+                        <ListView.itemTemplate>
+                            <Label text="{{ $value }}" fontSize="13" color="#1A1A1A"
+                                   padding="10 14" textWrap="true" />
+                        </ListView.itemTemplate>
+                    </ListView>
+                </StackLayout>
+
+                <!-- Separador -->
+                <StackLayout horizontalAlignment="center" margin="10 0">
+                    <StackLayout width="32" height="32" borderRadius="16"
+                                 borderWidth="1" borderColor="#E0E0E0"
+                                 backgroundColor="#FFFFFF"
+                                 horizontalAlignment="center" verticalAlignment="middle">
+                        <Label text="↓" fontSize="16" color="#9E9E9E"
+                               textAlignment="center" verticalAlignment="middle" />
+                    </StackLayout>
+                </StackLayout>
+
+                <!-- DESTINO -->
+                <Label text="PUNTO DE DESTINO" fontSize="10" fontWeight="bold"
+                       color="#9E9E9E" letterSpacing="1" margin="0 16 6 16" />
+
+                <GridLayout columns="auto, *" margin="0 16 0 16"
+                            backgroundColor="#FFFFFF" borderRadius="12"
+                            borderWidth="1" borderColor="#E8E8E8" padding="14 14">
+                    <Label col="0" text="✈" fontSize="16" color="#E53935"
+                           verticalAlignment="middle" margin="0 10 0 0" />
+                    <TextField col="1" hint="Dirección del destinatario..."
+                               text="{{ destination }}"
+                               fontSize="14" color="#1A1A1A"
+                               backgroundColor="transparent"
+                               borderWidth="0" padding="0"
+                               returnKeyType="done" />
+                </GridLayout>
+
+                <!-- Sugerencias destino -->
+                <StackLayout visibility="{{ showDestinationSuggestions ? 'visible' : 'collapsed' }}"
+                             margin="0 16 0 16" backgroundColor="#FFFFFF"
+                             borderWidth="1" borderColor="#E0E0E0" borderRadius="10">
+                    <ListView items="{{ destinationSuggestions }}"
+                              itemTap="{{ onDestinationSuggestionTap }}"
+                              separatorColor="#F5F5F5" height="160">
+                        <ListView.itemTemplate>
+                            <Label text="{{ $value }}" fontSize="13" color="#1A1A1A"
+                                   padding="10 14" textWrap="true" />
+                        </ListView.itemTemplate>
+                    </ListView>
+                </StackLayout>
+
+                <!-- Estimación -->
+                <GridLayout columns="auto, *" margin="16 16 0 16"
+                            backgroundColor="#FFFFFF" borderRadius="14"
+                            borderWidth="1" borderColor="#EEEEEE" padding="14 14"
+                            androidElevation="1">
+                    <StackLayout col="0" width="38" height="38" borderRadius="10"
+                                 backgroundColor="#FFF8E1"
+                                 verticalAlignment="middle" horizontalAlignment="center"
+                                 margin="0 12 0 0">
+                        <Label text="🕐" fontSize="18" textAlignment="center"
+                               verticalAlignment="middle" />
+                    </StackLayout>
+                    <StackLayout col="1" verticalAlignment="middle">
+                        <Label text="Estimación de Entrega" fontSize="14"
+                               fontWeight="bold" color="#1A1A1A" />
+                        <Label text="Calculada automáticamente al crear"
+                               fontSize="12" color="#BDBDBD" />
+                    </StackLayout>
+                </GridLayout>
+
+                <!-- Error de validación / submit -->
+                <Label text="{{ errorMessage }}" fontSize="13" color="#E53935"
+                       textWrap="true" textAlignment="center"
+                       visibility="{{ hasError ? 'visible' : 'collapsed' }}"
+                       margin="12 16 0 16" />
+
+                <!-- Botón crear -->
+                <Button tap="{{ onSubmitTap }}"
+                        isEnabled="{{ !isSubmitting }}"
+                        text="{{ isSubmitting ? 'Creando...' : '📦  Crear entrega' }}"
+                        fontSize="16" fontWeight="bold"
+                        color="#FFFFFF" backgroundColor="#4CAF50"
+                        borderRadius="16" height="54"
+                        margin="20 16 0 16" />
+
+                <!-- Cancelar -->
+                <Button text="Cancelar" tap="{{ onCancelTap }}"
+                        fontSize="14" color="#9E9E9E"
+                        backgroundColor="transparent"
+                        margin="8 16 0 16" />
+
+                <StackLayout height="40" />
+            </StackLayout>
+
+        </StackLayout>
+    </ScrollView>
+
+</Page>
