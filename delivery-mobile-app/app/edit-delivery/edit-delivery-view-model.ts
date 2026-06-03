@@ -1,10 +1,12 @@
 import { Observable, ObservableArray, Frame } from '@nativescript/core';
 import { EditDeliveryService, AddressSuggestion } from './edit-delivery.service';
+import { GeocodingService } from '../services/geocoding.service';
 
 type DriverListItem = { id: number; name: string; vehicle: string; initial: string };
 
 export class EditDeliveryViewModel extends Observable {
     private readonly _service = new EditDeliveryService();
+    private readonly _geocodingService = new GeocodingService();
     private readonly _deliveryId: number;
 
     private _isLoadingData = true;
@@ -24,6 +26,10 @@ export class EditDeliveryViewModel extends Observable {
 
     private _showOriginSuggestions = false;
     private _showDestinationSuggestions = false;
+    private _isLoadingOriginSuggestions = false;
+    private _isLoadingDestinationSuggestions = false;
+    private _showOriginOffline = false;
+    private _showDestinationOffline = false;
     private _originTimer: any = null;
     private _destTimer: any = null;
 
@@ -54,6 +60,10 @@ export class EditDeliveryViewModel extends Observable {
     get showDriverList(): boolean { return this._showDriverList; }
     get showOriginSuggestions(): boolean { return this._showOriginSuggestions; }
     get showDestinationSuggestions(): boolean { return this._showDestinationSuggestions; }
+    get isLoadingOriginSuggestions(): boolean { return this._isLoadingOriginSuggestions; }
+    get isLoadingDestinationSuggestions(): boolean { return this._isLoadingDestinationSuggestions; }
+    get showOriginOffline(): boolean { return this._showOriginOffline; }
+    get showDestinationOffline(): boolean { return this._showDestinationOffline; }
     get originListHeight(): number { return this.originSuggestions.length * 52; }
     get destinationListHeight(): number { return this.destinationSuggestions.length * 52; }
     get driverListHeight(): number { return Math.min(this.drivers.length * 64, 256); }
@@ -131,20 +141,57 @@ export class EditDeliveryViewModel extends Observable {
         const isOrigin = field === 'origin';
         clearTimeout(isOrigin ? this._originTimer : this._destTimer);
         this._hideSuggestions(field);
+
+        // Reset loading/offline al escribir
+        if (isOrigin) {
+            this._isLoadingOriginSuggestions = false;
+            this.notifyPropertyChange('isLoadingOriginSuggestions', false);
+            this._showOriginOffline = false;
+            this.notifyPropertyChange('showOriginOffline', false);
+        } else {
+            this._isLoadingDestinationSuggestions = false;
+            this.notifyPropertyChange('isLoadingDestinationSuggestions', false);
+            this._showDestinationOffline = false;
+            this.notifyPropertyChange('showDestinationOffline', false);
+        }
+
         if (text.length < 3) return;
+
+        // Sin conexión: mostrar mensaje inmediatamente, no llamar a la API
+        if (!this._geocodingService.isOnline()) {
+            if (isOrigin) {
+                this._showOriginOffline = true;
+                this.notifyPropertyChange('showOriginOffline', true);
+            } else {
+                this._showDestinationOffline = true;
+                this.notifyPropertyChange('showDestinationOffline', true);
+            }
+            return;
+        }
+
         const timer = setTimeout(() => this._fetchSuggestions(field, text), 500);
         if (isOrigin) this._originTimer = timer; else this._destTimer = timer;
     }
 
     private async _fetchSuggestions(field: 'origin' | 'destination', query: string): Promise<void> {
+        const isOrigin = field === 'origin';
+
+        if (isOrigin) {
+            this._isLoadingOriginSuggestions = true;
+            this.notifyPropertyChange('isLoadingOriginSuggestions', true);
+        } else {
+            this._isLoadingDestinationSuggestions = true;
+            this.notifyPropertyChange('isLoadingDestinationSuggestions', true);
+        }
+
         try {
-            const results = await this._service.searchAddress(query);
-            const current = field === 'origin' ? this._origin : this._destination;
+            const results = await this._geocodingService.getSuggestions(query);
+            const current = isOrigin ? this._origin : this._destination;
             if (current !== query || results.length === 0) return;
-            const arr = field === 'origin' ? this.originSuggestions : this.destinationSuggestions;
+            const arr = isOrigin ? this.originSuggestions : this.destinationSuggestions;
             arr.splice(0, arr.length);
-            results.forEach(r => arr.push(r));
-            if (field === 'origin') {
+            results.forEach(r => arr.push({ displayName: r }));
+            if (isOrigin) {
                 this._showOriginSuggestions = true;
                 this.notifyPropertyChange('showOriginSuggestions', true);
                 this.notifyPropertyChange('originListHeight', this.originListHeight);
@@ -154,6 +201,15 @@ export class EditDeliveryViewModel extends Observable {
                 this.notifyPropertyChange('destinationListHeight', this.destinationListHeight);
             }
         } catch { /* sugerencias fallan silenciosamente */ }
+        finally {
+            if (isOrigin) {
+                this._isLoadingOriginSuggestions = false;
+                this.notifyPropertyChange('isLoadingOriginSuggestions', false);
+            } else {
+                this._isLoadingDestinationSuggestions = false;
+                this.notifyPropertyChange('isLoadingDestinationSuggestions', false);
+            }
+        }
     }
 
     private _hideSuggestions(field: 'origin' | 'destination'): void {
