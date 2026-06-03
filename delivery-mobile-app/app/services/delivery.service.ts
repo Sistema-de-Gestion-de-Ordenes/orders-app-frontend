@@ -45,7 +45,14 @@ export class DeliveryService {
             content: JSON.stringify({ status }),
         });
         if (response.statusCode < 200 || response.statusCode >= 300) {
-            throw new Error('Failed to update delivery status. Please try again.');
+            const body = response.content?.toString?.() ?? '';
+            console.error(`updateDeliveryStatus failed — status: ${response.statusCode}, body: ${body}`);
+            let message = `Error ${response.statusCode}: Failed to update delivery status.`;
+            try {
+                const parsed = JSON.parse(body);
+                if (parsed?.message || parsed?.error) message = parsed.message ?? parsed.error;
+            } catch {}
+            throw new Error(message);
         }
     }
 
