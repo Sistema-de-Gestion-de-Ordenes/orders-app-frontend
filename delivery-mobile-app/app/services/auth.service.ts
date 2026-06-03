@@ -1,5 +1,6 @@
 import { ApplicationSettings, Http } from '@nativescript/core';
 import { API_CONFIG } from '../config/api.config';
+import { FirebaseService } from './firebase.service';
 
 export class AuthService {
     async login(email: string, password: string): Promise<string> {
@@ -36,6 +37,7 @@ export class AuthService {
     }
 
     logout(): void {
+        new FirebaseService().unregisterCurrentToken().catch(() => {});
         ApplicationSettings.remove('auth_token');
     }
 }
