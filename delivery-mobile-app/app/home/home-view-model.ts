@@ -2,6 +2,7 @@ import { Observable, ObservableArray, Frame } from '@nativescript/core';
 import { DeliveryService } from '../services/delivery.service';
 import { SqliteService } from '../services/sqlite.service';
 import { ConnectivityService } from '../services/connectivity.service';
+import { NotificationService } from '../services/notification.service';
 import { Delivery } from '../models/delivery.model';
 
 export class DeliveryItem extends Observable {
@@ -60,6 +61,7 @@ export class HomeViewModel extends Observable {
     private async init(): Promise<void> {
         await this.sqliteService.open();
         await this.loadDeliveries();
+        new NotificationService().checkPendingNavigation();
     }
 
     get deliveries(): ObservableArray<DeliveryItem> { return this._deliveries; }

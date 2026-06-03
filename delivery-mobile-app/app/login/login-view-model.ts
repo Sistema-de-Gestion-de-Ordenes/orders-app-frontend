@@ -1,5 +1,6 @@
 import { Observable, Frame } from '@nativescript/core';
 import { AuthService } from '../services/auth.service';
+import { FirebaseService } from '../services/firebase.service';
 
 export class LoginViewModel extends Observable {
     private _email: string = '';
@@ -62,6 +63,9 @@ export class LoginViewModel extends Observable {
         try {
             const token = await this.authService.login(this._email, this._password);
             this.authService.saveToken(token);
+            new FirebaseService().initializeAndRegister().catch((e) =>
+                console.error('FCM registration error:', e)
+            );
             Frame.topmost().navigate({
                 moduleName: 'home/home-page',
                 clearHistory: true,
