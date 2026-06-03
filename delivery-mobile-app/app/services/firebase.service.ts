@@ -1,5 +1,6 @@
 import { ApplicationSettings, Http } from '@nativescript/core';
-import messaging from '@nativescript/firebase-messaging';
+import { firebase } from '@nativescript/firebase-core';
+import '@nativescript/firebase-messaging';
 import { API_CONFIG } from '../config/api.config';
 
 export class FirebaseService {
@@ -12,12 +13,12 @@ export class FirebaseService {
     }
 
     async initializeAndRegister(): Promise<void> {
-        await messaging().requestPermission();
-        const token = await messaging().getToken();
+        await firebase().messaging().requestPermission();
+        const token = await firebase().messaging().getToken();
         if (token) {
             await this.registerToken(token);
         }
-        messaging().onTokenRefresh(async (newToken: string) => {
+        firebase().messaging().onToken(async (newToken: string) => {
             await this.registerToken(newToken).catch((e) =>
                 console.error('FCM token refresh registration failed:', e)
             );
@@ -25,7 +26,7 @@ export class FirebaseService {
     }
 
     async unregisterCurrentToken(): Promise<void> {
-        const token = await messaging().getToken();
+        const token = await firebase().messaging().getToken();
         if (!token) return;
         await Http.request({
             url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.UNREGISTER_FCM_TOKEN}`,

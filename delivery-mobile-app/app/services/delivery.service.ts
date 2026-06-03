@@ -37,6 +37,18 @@ export class DeliveryService {
         return response.content.toJSON() as DeliveryDetail;
     }
 
+    async updateDeliveryStatus(id: number, status: string): Promise<void> {
+        const response = await Http.request({
+            url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DELIVERIES}/${id}`,
+            method: 'PATCH',
+            headers: this.getAuthHeaders(),
+            content: JSON.stringify({ status }),
+        });
+        if (response.statusCode < 200 || response.statusCode >= 300) {
+            throw new Error('Failed to update delivery status. Please try again.');
+        }
+    }
+
     async createDelivery(payload: CreateDeliveryRequest): Promise<void> {
         const response = await Http.request({
             url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DELIVERIES}`,

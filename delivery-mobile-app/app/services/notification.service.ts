@@ -1,5 +1,6 @@
 import { ApplicationSettings, Dialogs, Frame } from '@nativescript/core';
-import messaging from '@nativescript/firebase-messaging';
+import { firebase } from '@nativescript/firebase-core';
+import '@nativescript/firebase-messaging';
 
 const PENDING_DELIVERY_KEY = 'pending_notification_delivery_id';
 
@@ -11,7 +12,7 @@ export class NotificationService {
         NotificationService.handlersRegistered = true;
 
         // Foreground: app is open — show in-app dialog with option to navigate
-        messaging().onMessage(async (message) => {
+        firebase().messaging().onMessage(async (message) => {
             const title = message.notification?.title ?? 'Notification';
             const body  = message.notification?.body  ?? '';
             const deliveryId = this.extractDeliveryId(message);
@@ -29,24 +30,13 @@ export class NotificationService {
             }
         });
 
-        // Background tap: app was suspended — navigate immediately
-        messaging().onNotificationOpenedApp((message) => {
+        // Notification tap (background or cold-start): navigate to delivery
+        firebase().messaging().onNotificationTap((message) => {
             const deliveryId = this.extractDeliveryId(message);
             if (deliveryId !== null) {
                 this.navigateToDelivery(deliveryId);
             }
         });
-
-        // Cold-start tap: app was killed — store id, navigate once home loads
-        messaging().getInitialNotification()
-            .then((message) => {
-                if (!message) return;
-                const deliveryId = this.extractDeliveryId(message);
-                if (deliveryId !== null) {
-                    ApplicationSettings.setString(PENDING_DELIVERY_KEY, String(deliveryId));
-                }
-            })
-            .catch(() => {});
     }
 
     checkPendingNavigation(): void {

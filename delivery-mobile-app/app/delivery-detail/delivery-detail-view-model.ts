@@ -1,17 +1,21 @@
-import { Observable, Frame } from '@nativescript/core';
+import { Observable, Frame, Dialogs } from '@nativescript/core';
 import { DeliveryService } from '../services/delivery.service';
+import { AuthService } from '../services/auth.service';
 import { DeliveryDetail } from '../models/delivery.model';
 
 export class DeliveryDetailViewModel extends Observable {
     private _isLoading = true;
     private _hasError = false;
     private _errorMessage = '';
+    private _isUpdatingStatus = false;
+    private _isAdmin = false;
 
     private _title = '';
     private _statusLabel = '';
     private _statusColor = '#E0E0E0';
     private _statusTextColor = '#616161';
     private _deliveryIdLabel = '';
+    private _currentStatus = '';
 
     private _clientName = '';
     private _clientEmail = '';
@@ -34,6 +38,7 @@ export class DeliveryDetailViewModel extends Observable {
         const paddedId = String(deliveryId).padStart(3, '0');
         this._title = `Entrega #${paddedId}`;
         this._deliveryIdLabel = `ID #${paddedId}`;
+        this._isAdmin = new AuthService().isAdmin();
         this.loadDelivery();
     }
 
@@ -47,6 +52,11 @@ export class DeliveryDetailViewModel extends Observable {
 
     get errorMessage(): string { return this._errorMessage; }
     set errorMessage(v: string) { this._errorMessage = v; this.notifyPropertyChange('errorMessage', v); }
+
+    get isUpdatingStatus(): boolean { return this._isUpdatingStatus; }
+    set isUpdatingStatus(v: boolean) { this._isUpdatingStatus = v; this.notifyPropertyChange('isUpdatingStatus', v); }
+
+    get isAdmin(): boolean { return this._isAdmin; }
 
     get title(): string { return this._title; }
     set title(v: string) { this._title = v; this.notifyPropertyChange('title', v); }
@@ -114,28 +124,60 @@ export class DeliveryDetailViewModel extends Observable {
         Frame.topmost().goBack();
     }
 
+    async onChangeStatusTap(): Promise<void> {
+        const options = [
+            { label: 'Pendiente',    value: 'pending'   },
+            { label: 'En tránsito', value: 'en_way'    },
+            { label: 'Entregado',   value: 'delivered' },
+            { label: 'Cancelado',   value: 'canceled'  },
+        ];
+
+        const result = await Dialogs.action({
+            title: 'Cambiar estado de entrega',
+            cancelButtonText: 'Cancelar',
+            actions: options.map(o => o.label),
+        });
+
+        if (!result || result === 'Cancelar') return;
+
+        const selected = options.find(o => o.label === result);
+        if (!selected || selected.value === this._currentStatus) return;
+
+        this.isUpdatingStatus = true;
+        try {
+            await this.deliveryService.updateDeliveryStatus(this.deliveryId, selected.value);
+            this._currentStatus = selected.value;
+            const s = this.resolveStatus(selected.value);
+            this.statusLabel     = s.label;
+            this.statusColor     = s.bg;
+            this.statusTextColor = s.text;
+        } catch (e: any) {
+            await Dialogs.alert({
+                title: 'Error',
+                message: e.message ?? 'No se pudo cambiar el estado.',
+                okButtonText: 'Aceptar',
+            });
+        } finally {
+            this.isUpdatingStatus = false;
+        }
+    }
+
     // ── Private ────────────────────────────────────────────────────────────────
 
     private populateData(data: DeliveryDetail): void {
         const paddedId = String(data.id).padStart(3, '0');
-        this.title = `Entrega #${paddedId}`;
+        this.title           = `Entrega #${paddedId}`;
         this.deliveryIdLabel = `ID #${paddedId}`;
 
-        const statusMap: Record<string, { label: string; bg: string; text: string }> = {
-            pending:    { label: 'Pendiente',   bg: '#E0E0E0', text: '#616161' },
-            in_transit: { label: 'En tránsito', bg: '#BBDEFB', text: '#1565C0' },
-            en_way:     { label: 'En tránsito', bg: '#BBDEFB', text: '#1565C0' },
-            delivered:  { label: 'Entregado',   bg: '#C8E6C9', text: '#2E7D32' },
-            canceled:   { label: 'Cancelado',   bg: '#FFCDD2', text: '#C62828' },
-        };
-        const s = statusMap[data.status] ?? { label: data.status, bg: '#E0E0E0', text: '#616161' };
+        this._currentStatus  = data.status;
+        const s = this.resolveStatus(data.status);
         this.statusLabel     = s.label;
         this.statusColor     = s.bg;
         this.statusTextColor = s.text;
 
-        this.clientName             = data.client.name;
-        this.clientEmail            = data.client.email;
-        this.clientRegisteredSince  = data.client.registeredSince;
+        this.clientName            = data.client.name;
+        this.clientEmail           = data.client.email;
+        this.clientRegisteredSince = data.client.registeredSince;
 
         this.driverName     = data.driver.name;
         this.driverPhone    = data.driver.phone;
@@ -144,5 +186,16 @@ export class DeliveryDetailViewModel extends Observable {
 
         this.origin      = data.origin;
         this.destination = data.destination;
+    }
+
+    private resolveStatus(status: string): { label: string; bg: string; text: string } {
+        const map: Record<string, { label: string; bg: string; text: string }> = {
+            pending:    { label: 'Pendiente',   bg: '#E0E0E0', text: '#616161' },
+            in_transit: { label: 'En tránsito', bg: '#BBDEFB', text: '#1565C0' },
+            en_way:     { label: 'En tránsito', bg: '#BBDEFB', text: '#1565C0' },
+            delivered:  { label: 'Entregado',   bg: '#C8E6C9', text: '#2E7D32' },
+            canceled:   { label: 'Cancelado',   bg: '#FFCDD2', text: '#C62828' },
+        };
+        return map[status] ?? { label: status, bg: '#E0E0E0', text: '#616161' };
     }
 }

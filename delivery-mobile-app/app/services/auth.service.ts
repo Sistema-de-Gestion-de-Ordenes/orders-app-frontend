@@ -36,6 +36,21 @@ export class AuthService {
         return !!this.getToken();
     }
 
+    isAdmin(): boolean {
+        const token = this.getToken();
+        if (!token) return false;
+        try {
+            const parts = token.split('.');
+            if (parts.length !== 3) return false;
+            const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+            const pad = (4 - (base64.length % 4)) % 4;
+            const payload = JSON.parse(atob(base64 + '='.repeat(pad)));
+            return payload?.role === 'admin';
+        } catch {
+            return false;
+        }
+    }
+
     logout(): void {
         new FirebaseService().unregisterCurrentToken().catch(() => {});
         ApplicationSettings.remove('auth_token');
