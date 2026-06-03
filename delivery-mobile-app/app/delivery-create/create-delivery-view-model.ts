@@ -1,6 +1,6 @@
 import { Observable, ObservableArray, Frame, alert } from '@nativescript/core';
 import { DeliveryService } from '../services/delivery.service';
-import { Client, Driver } from '../models/delivery.model';
+import { GeocodingService } from '../services/geocoding.service';
 
 // ── Internal types for list items ────────────────────────────────────────────
 // Each item exposes `isSelected` so the XML can toggle the radio button color.
@@ -35,6 +35,10 @@ export class CreateDeliveryViewModel extends Observable {
     private _destinationSuggestions = new ObservableArray<string>();
     private _showOriginSuggestions      = false;
     private _showDestinationSuggestions = false;
+    private _isLoadingOriginSuggestions      = false;
+    private _isLoadingDestinationSuggestions = false;
+    private _showOriginOffline      = false;
+    private _showDestinationOffline = false;
 
     private _originDebounceTimer:      any = null;
     private _destinationDebounceTimer: any = null;
@@ -45,7 +49,8 @@ export class CreateDeliveryViewModel extends Observable {
     private _hasError           = false;
     private _errorMessage       = '';
 
-    private deliveryService = new DeliveryService();
+    private deliveryService  = new DeliveryService();
+    private geocodingService = new GeocodingService();
 
     constructor() {
         super();
@@ -84,6 +89,30 @@ export class CreateDeliveryViewModel extends Observable {
     set showDestinationSuggestions(value: boolean) {
         this._showDestinationSuggestions = value;
         this.notifyPropertyChange('showDestinationSuggestions', value);
+    }
+
+    get isLoadingOriginSuggestions(): boolean { return this._isLoadingOriginSuggestions; }
+    set isLoadingOriginSuggestions(value: boolean) {
+        this._isLoadingOriginSuggestions = value;
+        this.notifyPropertyChange('isLoadingOriginSuggestions', value);
+    }
+
+    get isLoadingDestinationSuggestions(): boolean { return this._isLoadingDestinationSuggestions; }
+    set isLoadingDestinationSuggestions(value: boolean) {
+        this._isLoadingDestinationSuggestions = value;
+        this.notifyPropertyChange('isLoadingDestinationSuggestions', value);
+    }
+
+    get showOriginOffline(): boolean { return this._showOriginOffline; }
+    set showOriginOffline(value: boolean) {
+        this._showOriginOffline = value;
+        this.notifyPropertyChange('showOriginOffline', value);
+    }
+
+    get showDestinationOffline(): boolean { return this._showDestinationOffline; }
+    set showDestinationOffline(value: boolean) {
+        this._showDestinationOffline = value;
+        this.notifyPropertyChange('showDestinationOffline', value);
     }
 
     get isLoadingDropdowns(): boolean { return this._isLoadingDropdowns; }
@@ -187,42 +216,59 @@ export class CreateDeliveryViewModel extends Observable {
     // ── Nominatim autocomplete ────────────────────────────────────────────────
 
     private fetchSuggestions(query: string, field: 'origin' | 'destination'): void {
-        if (field === 'origin') {
+        const isOrigin = field === 'origin';
+
+        if (isOrigin) {
             if (this._originDebounceTimer) clearTimeout(this._originDebounceTimer);
         } else {
             if (this._destinationDebounceTimer) clearTimeout(this._destinationDebounceTimer);
         }
 
-        if (!query || query.length < 3) {
-            if (field === 'origin') this.showOriginSuggestions = false;
-            else this.showDestinationSuggestions = false;
+        // Reset all suggestion states for this field
+        if (isOrigin) {
+            this.showOriginSuggestions      = false;
+            this.showOriginOffline          = false;
+            this.isLoadingOriginSuggestions = false;
+        } else {
+            this.showDestinationSuggestions      = false;
+            this.showDestinationOffline          = false;
+            this.isLoadingDestinationSuggestions = false;
+        }
+
+        if (!query || query.length < 2) return;
+
+        // Block API call if offline and show message immediately
+        if (!this.geocodingService.isOnline()) {
+            if (isOrigin) this.showOriginOffline = true;
+            else this.showDestinationOffline = true;
             return;
         }
 
         const timer = setTimeout(async () => {
-            try {
-                const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=4&countrycodes=cr`;
-                const response = await fetch(url, {
-                    headers: { 'User-Agent': 'DeliveryMobileApp/1.0' },
-                });
-                const data = await response.json();
-                const suggestions: string[] = data.map((item: any) => item.display_name);
+            if (isOrigin) this.isLoadingOriginSuggestions = true;
+            else this.isLoadingDestinationSuggestions = true;
 
-                if (field === 'origin') {
+            try {
+                const suggestions = await this.geocodingService.getSuggestions(query);
+
+                if (isOrigin) {
                     this._originSuggestions.splice(0, this._originSuggestions.length);
                     suggestions.forEach(s => this._originSuggestions.push(s));
+                    this.isLoadingOriginSuggestions = false;
                     this.showOriginSuggestions = suggestions.length > 0;
                 } else {
                     this._destinationSuggestions.splice(0, this._destinationSuggestions.length);
                     suggestions.forEach(s => this._destinationSuggestions.push(s));
+                    this.isLoadingDestinationSuggestions = false;
                     this.showDestinationSuggestions = suggestions.length > 0;
                 }
             } catch {
-                // Autocomplete is optional — fail silently
+                if (isOrigin) this.isLoadingOriginSuggestions = false;
+                else this.isLoadingDestinationSuggestions = false;
             }
-        }, 400);
+        }, 500);
 
-        if (field === 'origin') this._originDebounceTimer = timer;
+        if (isOrigin) this._originDebounceTimer = timer;
         else this._destinationDebounceTimer = timer;
     }
 
