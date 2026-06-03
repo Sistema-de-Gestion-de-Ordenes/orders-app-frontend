@@ -105,7 +105,7 @@ export class HomeViewModel extends Observable {
     onDeliveryTap(args: any): void {
         const delivery = this._deliveries.getItem(args.index);
         Frame.topmost().navigate({
-            moduleName: 'delivery-detail/delivery-detail-page',
+            moduleName: 'edit-delivery/edit-delivery-page',
             context: { deliveryId: delivery.id },
         });
     }
