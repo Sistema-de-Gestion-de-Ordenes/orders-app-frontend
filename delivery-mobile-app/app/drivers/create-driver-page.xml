@@ -236,7 +236,7 @@
                                          horizontalAlignment="center" marginTop="4" />
                         </StackLayout>
                     </StackLayout>
-                    <TextField col="1" hint="ej. +34 612 345 678" text="{{ phone }}"
+                    <TextField col="1" hint="ej. +506 8888 8888" text="{{ phone }}"
                                keyboardType="phone" backgroundColor="transparent"
                                borderWidth="0" padding="0" />
                 </GridLayout>
