@@ -25,10 +25,19 @@ export class AuthService {
 
     saveToken(token: string): void {
         ApplicationSettings.setString('auth_token', token);
+        // Decode and cache the role once at login so getRole() never needs to parse JWT again
+        try {
+            const role = this._extractRoleFromToken(token);
+            if (role) ApplicationSettings.setString('auth_role', role);
+        } catch {}
     }
 
     getToken(): string | null {
         return ApplicationSettings.getString('auth_token');
+    }
+
+    getRole(): string | null {
+        return ApplicationSettings.getString('auth_role') ?? null;
     }
 
     isLoggedIn(): boolean {
@@ -37,44 +46,50 @@ export class AuthService {
 
     logout(): void {
         ApplicationSettings.remove('auth_token');
+        ApplicationSettings.remove('auth_role');
     }
 
-    getRole(): string | null {
-        const token = this.getToken();
-        if (!token) return null;
-        try {
-            const parts = token.split('.');
-            if (parts.length !== 3) return null;
-            let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-            while (base64.length % 4 !== 0) base64 += '=';
-            const decoded = this._base64Decode(base64);
-            const payload = JSON.parse(decoded);
-            return (
-                payload['role'] ??
-                payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ??
-                null
-            );
-        } catch {
-            return null;
-        }
+    private _extractRoleFromToken(token: string): string | null {
+        const parts = token.split('.');
+        if (parts.length !== 3) return null;
+
+        // base64url → base64 with padding
+        let b64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+        while (b64.length % 4 !== 0) b64 += '=';
+
+        // decode base64 → binary bytes → UTF-8 string (handles accented chars in name/email)
+        const binary = this._base64Decode(b64);
+        const json = decodeURIComponent(
+            binary.split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')
+        );
+
+        const payload = JSON.parse(json);
+
+        // JwtSecurityTokenHandler maps ClaimTypes.Role to "role" by default,
+        // but we also check the full URI in case the mapping was cleared
+        return (
+            payload['role'] ??
+            payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ??
+            null
+        );
     }
 
     private _base64Decode(str: string): string {
         const table = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-        const clean = str.replace(/[^A-Za-z0-9+/]/g, '');
+        const clean = str.replace(/[^A-Za-z0-9+/=]/g, '');
         let output = '';
         for (let i = 0; i < clean.length; i += 4) {
-            const b0 = table.indexOf(clean[i]);
-            const b1 = table.indexOf(clean[i + 1] ?? '');
-            const b2 = table.indexOf(clean[i + 2] ?? '');
-            const b3 = table.indexOf(clean[i + 3] ?? '');
+            const c0 = clean[i]     || '';
+            const c1 = clean[i + 1] || '';
+            const c2 = clean[i + 2] || '=';
+            const c3 = clean[i + 3] || '=';
+            const b0 = table.indexOf(c0);
+            const b1 = table.indexOf(c1);
+            const b2 = table.indexOf(c2);
+            const b3 = table.indexOf(c3);
             output += String.fromCharCode((b0 << 2) | (b1 >> 4));
-            if (clean[i + 2] && clean[i + 2] !== '=') {
-                output += String.fromCharCode(((b1 & 0xf) << 4) | (b2 >> 2));
-            }
-            if (clean[i + 3] && clean[i + 3] !== '=') {
-                output += String.fromCharCode(((b2 & 0x3) << 6) | b3);
-            }
+            if (c2 !== '=') output += String.fromCharCode(((b1 & 0xf) << 4) | (b2 >> 2));
+            if (c3 !== '=') output += String.fromCharCode(((b2 & 0x3) << 6) | b3);
         }
         return output;
     }
