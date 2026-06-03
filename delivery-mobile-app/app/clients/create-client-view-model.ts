@@ -61,6 +61,13 @@ get profilePhotoSource(): ImageSource | null { return this._profilePhotoSource; 
         Frame.topmost().goBack();
     }
 
+    onGoToEntregas(): void {
+        Frame.topmost().navigate({ moduleName: 'home/home-page', clearHistory: true });
+    }
+
+    onGoToRepartidores(): void {}
+    onGoToPerfil(): void {}
+
     async onTakePhoto(): Promise<void> {
         try {
             await requestPermissions();

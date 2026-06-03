@@ -21,17 +21,26 @@
     <GridLayout rows="*, auto">
 
         <!-- ── CONTENT ROW ── -->
-        <GridLayout row="0" rows="*">
+        <GridLayout row="0" rows="auto, *">
+
+            <!-- Offline banner -->
+            <GridLayout row="0" columns="auto, *" class="offline-banner"
+                        visibility="{{ isOffline ? 'visible' : 'collapsed' }}">
+                <Label col="0" text="⊘" fontSize="14" color="#9E9E9E"
+                       verticalAlignment="middle" marginRight="8" />
+                <Label col="1" text="Modo offline — mostrando datos guardados localmente"
+                       fontSize="12" color="#757575" verticalAlignment="middle" textWrap="true" />
+            </GridLayout>
 
             <!-- Loading state -->
-            <StackLayout row="0" verticalAlignment="middle" horizontalAlignment="center"
+            <StackLayout row="1" verticalAlignment="middle" horizontalAlignment="center"
                          visibility="{{ isLoading ? 'visible' : 'collapsed' }}">
                 <ActivityIndicator busy="true" color="#4CAF50" width="48" height="48" />
                 <Label text="Cargando entregas..." class="subtitle" marginTop="12" />
             </StackLayout>
 
             <!-- Error state -->
-            <StackLayout row="0" verticalAlignment="middle" horizontalAlignment="center"
+            <StackLayout row="1" verticalAlignment="middle" horizontalAlignment="center"
                          visibility="{{ hasError ? 'visible' : 'collapsed' }}" padding="32">
                 <Label text="⚠️" fontSize="48" textAlignment="center" />
                 <Label text="{{ errorMessage }}" class="subtitle" textWrap="true"
@@ -41,7 +50,7 @@
             </StackLayout>
 
             <!-- Empty state -->
-            <StackLayout row="0" verticalAlignment="middle" horizontalAlignment="center"
+            <StackLayout row="1" verticalAlignment="middle" horizontalAlignment="center"
                          visibility="{{ isEmpty ? 'visible' : 'collapsed' }}" padding="32">
                 <Label text="📦" fontSize="64" textAlignment="center" />
                 <Label text="No hay entregas registradas" class="title"
@@ -51,7 +60,7 @@
             </StackLayout>
 
             <!-- Deliveries list -->
-            <ListView row="0" items="{{ deliveries }}" itemTap="{{ onDeliveryTap }}"
+            <ListView row="1" items="{{ deliveries }}" itemTap="{{ onDeliveryTap }}"
                       separatorColor="transparent"
                       visibility="{{ !isLoading &amp;&amp; !hasError &amp;&amp; !isEmpty ? 'visible' : 'collapsed' }}">
                 <ListView.itemTemplate>
@@ -159,7 +168,7 @@
             </ListView>
 
             <!-- FAB -->
-            <StackLayout row="0" verticalAlignment="bottom" horizontalAlignment="right"
+            <StackLayout row="1" verticalAlignment="bottom" horizontalAlignment="right"
                          margin="0 24 24 0">
                 <Button text="+" tap="{{ onAddTap }}"
                         width="56" height="56" borderRadius="28"

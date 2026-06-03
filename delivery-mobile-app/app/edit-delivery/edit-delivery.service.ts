@@ -34,7 +34,7 @@ export class EditDeliveryService {
 
     async getDelivery(id: number): Promise<DeliveryDetail> {
         const response = await Http.request({
-            url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DELIVERY_BY_ID(id)}`,
+            url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DELIVERIES}/${id}`,
             method: 'GET',
             headers: this.getAuthHeaders(),
         });
@@ -62,7 +62,7 @@ export class EditDeliveryService {
 
     async updateDelivery(id: number, origin: string, destination: string, driverId: number): Promise<void> {
         const response = await Http.request({
-            url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DELIVERY_BY_ID(id)}`,
+            url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DELIVERIES}/${id}`,
             method: 'PUT',
             headers: this.getAuthHeaders(),
             content: JSON.stringify({ origin, destination, driverId }),

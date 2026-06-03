@@ -7,11 +7,23 @@ export interface Delivery {
     status: 'pending' | 'en_way' | 'delivered' | 'canceled';
 }
 
-export interface DeliveryDetail {
+export interface Client {
     id: number;
-    status: string;
+    name: string;
+    email: string;
+    phone: string;
+}
+
+export interface Driver {
+    id: number;
+    name: string;
+    vehicle: string;
+    plates: string;
+}
+
+export interface CreateDeliveryRequest {
+    clientId: number;
+    driverId: number;
     origin: string;
     destination: string;
-    driver: { id: number; name: string; phone: string; photoUrl: string | null; verified: boolean };
-    client: { name: string; email: string; registeredSince: string };
 }
