@@ -60,7 +60,7 @@
             </StackLayout>
 
             <!-- Deliveries list -->
-            <ListView row="1" items="{{ deliveries }}" itemTap="{{ onDeliveryTap }}"
+            <ListView row="1" items="{{ deliveries }}"
                       separatorColor="transparent"
                       visibility="{{ !isLoading &amp;&amp; !hasError &amp;&amp; !isEmpty ? 'visible' : 'collapsed' }}">
                 <ListView.itemTemplate>
@@ -160,6 +160,16 @@
                                     <Label col="1" text="{{ destination }}" fontSize="12"
                                            color="#424242" verticalAlignment="middle" textWrap="true" />
                                 </GridLayout>
+                            </StackLayout>
+
+                            <!-- Botón editar (solo admins) -->
+                            <StackLayout padding="0 14 14 14"
+                                         visibility="{{ isAdmin ? 'visible' : 'collapsed' }}">
+                                <StackLayout height="1" backgroundColor="#F0F0F0" marginBottom="12" />
+                                <Button text="✏  Editar entrega" tap="{{ onEditTap }}"
+                                        backgroundColor="#4CAF50" color="#FFFFFF"
+                                        borderRadius="8" fontSize="13" fontWeight="bold"
+                                        padding="10 0" />
                             </StackLayout>
 
                         </StackLayout>

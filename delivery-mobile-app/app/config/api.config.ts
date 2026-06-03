@@ -7,8 +7,8 @@ export const API_CONFIG = {
     ENDPOINTS: {
         LOGIN: '/auth/login',
         DELIVERIES: '/deliveries',
-        CLIENTS:    '/clients',
-        DRIVERS:    '/drivers',
+        CLIENTS:    '/clients',         
+        DRIVERS:    '/drivers',          
         CREATE_CLIENT: '/clients',
     }
 };
