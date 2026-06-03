@@ -1,36 +1,40 @@
 import { Observable, ImageSource, Frame, knownFolders, path } from '@nativescript/core';
 import { requestPermissions, takePicture } from '@nativescript/camera';
 import { ImagePicker } from '@nativescript/imagepicker';
-import { ClientService } from '../services/client.service';
+import { DriverService } from '../services/driver.service';
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-export class CreateClientViewModel extends Observable {
+export class CreateDriverViewModel extends Observable {
     private _name: string = '';
-    private _email: string = '';
-    private _password: string = '';
+    private _vehicle: string = '';
+    private _plates: string = '';
     private _phone: string = '';
     private _profilePhotoSource: ImageSource | null = null;
     private _profilePhotoPath: string | null = null;
     private _isLoading: boolean = false;
     private _errorMessage: string = '';
     private _showSuccess: boolean = false;
+    private _driversCount: number = 0;
 
-    private clientService = new ClientService();
+    private driverService = new DriverService();
+
+    constructor() {
+        super();
+        this.loadDriversCount();
+    }
 
     get name(): string { return this._name; }
     set name(value: string) { this._name = value; this.notifyPropertyChange('name', value); }
 
-    get email(): string { return this._email; }
-    set email(value: string) { this._email = value; this.notifyPropertyChange('email', value); }
+    get vehicle(): string { return this._vehicle; }
+    set vehicle(value: string) { this._vehicle = value; this.notifyPropertyChange('vehicle', value); }
 
-    get password(): string { return this._password; }
-    set password(value: string) { this._password = value; this.notifyPropertyChange('password', value); }
+    get plates(): string { return this._plates; }
+    set plates(value: string) { this._plates = value; this.notifyPropertyChange('plates', value); }
 
     get phone(): string { return this._phone; }
     set phone(value: string) { this._phone = value; this.notifyPropertyChange('phone', value); }
 
-get profilePhotoSource(): ImageSource | null { return this._profilePhotoSource; }
+    get profilePhotoSource(): ImageSource | null { return this._profilePhotoSource; }
     set profilePhotoSource(value: ImageSource | null) {
         this._profilePhotoSource = value;
         this.notifyPropertyChange('profilePhotoSource', value);
@@ -57,6 +61,18 @@ get profilePhotoSource(): ImageSource | null { return this._profilePhotoSource; 
         this.notifyPropertyChange('showSuccess', value);
     }
 
+    get driversCount(): number { return this._driversCount; }
+    set driversCount(value: number) {
+        this._driversCount = value;
+        this.notifyPropertyChange('driversCount', value);
+    }
+
+    private async loadDriversCount(): Promise<void> {
+        try {
+            this.driversCount = await this.driverService.getDriversCount();
+        } catch { /* silently ignore */ }
+    }
+
     onBack(): void {
         Frame.topmost().goBack();
     }
@@ -65,8 +81,8 @@ get profilePhotoSource(): ImageSource | null { return this._profilePhotoSource; 
         Frame.topmost().navigate({ moduleName: 'home/home-page', clearHistory: true });
     }
 
-    onGoToRepartidores(): void {
-        Frame.topmost().navigate({ moduleName: 'drivers/create-driver-page', clearHistory: true });
+    onGoToClientes(): void {
+        Frame.topmost().navigate({ moduleName: 'clients/create-client-page', clearHistory: true });
     }
 
     onGoToPerfil(): void {}
@@ -114,18 +130,19 @@ get profilePhotoSource(): ImageSource | null { return this._profilePhotoSource; 
         this.errorMessage = '';
 
         try {
-            await this.clientService.createClient({
-                name: this._name.trim(),
-                email: this._email.trim(),
-                password: this._password,
-                phone: this._phone.trim(),
+            await this.driverService.createDriver({
+                name:             this._name.trim(),
+                vehicle:          this._vehicle.trim(),
+                plates:           this._plates.trim(),
+                phone:            this._phone.trim(),
                 profilePhotoPath: this._profilePhotoPath!,
             });
 
+            this.driversCount = this._driversCount + 1;
             this.showSuccess = true;
             this.resetForm();
         } catch (error: any) {
-            this.errorMessage = error.message || 'Error al guardar el cliente. Intente de nuevo.';
+            this.errorMessage = error.message || 'Error al guardar el repartidor. Intente de nuevo.';
         } finally {
             this.isLoading = false;
         }
@@ -136,12 +153,12 @@ get profilePhotoSource(): ImageSource | null { return this._profilePhotoSource; 
             this.errorMessage = 'El nombre completo es requerido.';
             return false;
         }
-        if (!this._email.trim() || !EMAIL_REGEX.test(this._email.trim())) {
-            this.errorMessage = 'Ingrese un correo electrónico válido.';
+        if (!this._vehicle.trim()) {
+            this.errorMessage = 'El vehículo es requerido.';
             return false;
         }
-        if (!this._password || this._password.length < 8) {
-            this.errorMessage = 'La contraseña debe tener al menos 8 caracteres.';
+        if (!this._plates.trim()) {
+            this.errorMessage = 'Las placas son requeridas.';
             return false;
         }
         if (!this._phone.trim()) {
@@ -157,11 +174,11 @@ get profilePhotoSource(): ImageSource | null { return this._profilePhotoSource; 
     }
 
     private resetForm(): void {
-        this.name = '';
-        this.email = '';
-        this.password = '';
-        this.phone = '';
+        this.name    = '';
+        this.vehicle = '';
+        this.plates  = '';
+        this.phone   = '';
         this.profilePhotoSource = null;
-        this._profilePhotoPath = null;
+        this._profilePhotoPath  = null;
     }
 }
