@@ -1,10 +1,10 @@
 import { Observable, ObservableArray, Frame } from '@nativescript/core';
-import { DeliveryService, AddressSuggestion } from '../services/delivery.service';
+import { EditDeliveryService, AddressSuggestion } from './edit-delivery.service';
 
 type DriverListItem = { id: number; name: string; vehicle: string; initial: string };
 
 export class EditDeliveryViewModel extends Observable {
-    private readonly _service = new DeliveryService();
+    private readonly _service = new EditDeliveryService();
     private readonly _deliveryId: number;
 
     private _isLoadingData = true;
