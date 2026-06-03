@@ -39,7 +39,7 @@ export class DeliveryService {
 
     async updateDeliveryStatus(id: number, status: string): Promise<void> {
         const response = await Http.request({
-            url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DELIVERIES}/${id}`,
+            url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DELIVERIES}/${id}/status`,
             method: 'PATCH',
             headers: this.getAuthHeaders(),
             content: JSON.stringify({ status }),
