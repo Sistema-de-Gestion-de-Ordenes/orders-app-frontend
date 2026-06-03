@@ -45,7 +45,9 @@ export class AuthService {
             const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
             const pad = (4 - (base64.length % 4)) % 4;
             const payload = JSON.parse(atob(base64 + '='.repeat(pad)));
-            return payload?.role === 'admin';
+            const role = payload?.role
+                ?? payload?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+            return role === 'admin';
         } catch {
             return false;
         }

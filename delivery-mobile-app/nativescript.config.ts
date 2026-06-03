@@ -1,7 +1,7 @@
 import { NativeScriptConfig } from '@nativescript/core';
 
 export default {
-  id: 'org.nativescript.deliverymobileapp',
+  id: 'com.moviles.orders',
   appPath: 'app',
   appResourcesPath: 'App_Resources',
   android: {
