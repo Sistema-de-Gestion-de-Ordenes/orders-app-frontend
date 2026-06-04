@@ -62,13 +62,13 @@
             <!-- Deliveries list -->
             <ListView row="1" items="{{ deliveries }}"
                       separatorColor="transparent"
-                      itemTap="{{ onDeliveryTap }}"
                       visibility="{{ !isLoading &amp;&amp; !hasError &amp;&amp; !isEmpty ? 'visible' : 'collapsed' }}">
                 <ListView.itemTemplate>
                     <GridLayout rows="auto" columns="*" margin="8 16 0 16"
                                 backgroundColor="#FFFFFF" borderRadius="16"
                                 borderWidth="1" borderColor="#EEEEEE" padding="0"
-                                androidElevation="2">
+                                androidElevation="2"
+                                tap="{{ onDetailTap }}">
                         <StackLayout col="0" padding="0">
 
                             <!-- Header: Entrega # + badge -->

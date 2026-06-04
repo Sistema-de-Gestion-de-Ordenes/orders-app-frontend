@@ -43,6 +43,13 @@ export class DeliveryItem extends Observable {
         this.statusTextColor = mapped.text;
     }
 
+    onDetailTap(): void {
+        Frame.topmost().navigate({
+            moduleName: 'delivery-detail/delivery-detail-page',
+            context: { deliveryId: this.id },
+        });
+    }
+
     onEditTap(): void {
         Frame.topmost().navigate({
             moduleName: 'edit-delivery/edit-delivery-page',
