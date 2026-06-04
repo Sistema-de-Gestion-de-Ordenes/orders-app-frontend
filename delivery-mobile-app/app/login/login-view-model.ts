@@ -53,7 +53,7 @@ export class LoginViewModel extends Observable {
 
     async onLoginTap(): Promise<void> {
         if (!this._email.trim() || !this._password.trim()) {
-            this.errorMessage = 'Please enter your email and password.';
+            this.errorMessage = 'Por favor ingresa tu correo y contraseña.';
             return;
         }
 
@@ -71,7 +71,7 @@ export class LoginViewModel extends Observable {
                 clearHistory: true,
             });
         } catch (error: any) {
-            this.errorMessage = error.message || 'Login failed. Please try again.';
+            this.errorMessage = error.message || 'Error al iniciar sesión. Intenta de nuevo.';
         } finally {
             this.isLoading = false;
         }

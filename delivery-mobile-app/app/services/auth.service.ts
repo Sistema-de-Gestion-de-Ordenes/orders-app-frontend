@@ -14,11 +14,11 @@ export class AuthService {
         const raw = response.content?.toJSON?.() ?? null;
 
         if (response.statusCode < 200 || response.statusCode >= 300) {
-            throw new Error(raw?.error ?? 'Login failed.');
+            throw new Error(raw?.error ?? 'Error al iniciar sesión.');
         }
 
         if (!raw?.token) {
-            throw new Error('Invalid server response: missing token.');
+            throw new Error('Respuesta inválida del servidor.');
         }
 
         return raw.token as string;

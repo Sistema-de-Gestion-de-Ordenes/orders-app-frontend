@@ -13,7 +13,7 @@ export class NotificationService {
 
         // Foreground: app is open — show in-app dialog with option to navigate
         firebase().messaging().onMessage(async (message) => {
-            const title = message.notification?.title ?? 'Notification';
+            const title = message.notification?.title ?? 'Notificación';
             const body  = message.notification?.body  ?? '';
             const deliveryId = this.extractDeliveryId(message);
 
@@ -21,8 +21,8 @@ export class NotificationService {
                 const goToDetail = await Dialogs.confirm({
                     title,
                     message: body,
-                    okButtonText:     'View delivery',
-                    cancelButtonText: 'Dismiss',
+                    okButtonText:     'Ver entrega',
+                    cancelButtonText: 'Cerrar',
                 });
                 if (goToDetail) this.navigateToDelivery(deliveryId);
             } else {

@@ -31,10 +31,12 @@ export class DeliveryItem extends Observable {
         this.isAdmin     = isAdmin;
 
         const statusMap: Record<string, { label: string; bg: string; text: string }> = {
-            pending:   { label: 'Pending',    bg: '#E0E0E0', text: '#616161' },
-            en_way:    { label: 'On the way', bg: '#BBDEFB', text: '#1565C0' },
-            delivered: { label: 'Delivered',  bg: '#C8E6C9', text: '#2E7D32' },
-            canceled:  { label: 'Canceled',   bg: '#FFCDD2', text: '#C62828' },
+            pending:    { label: 'Pendiente',   bg: '#E0E0E0', text: '#616161' },
+            en_way:     { label: 'En tránsito', bg: '#BBDEFB', text: '#1565C0' },
+            in_transit: { label: 'En tránsito', bg: '#BBDEFB', text: '#1565C0' },
+            delivered:  { label: 'Entregado',   bg: '#C8E6C9', text: '#2E7D32' },
+            canceled:   { label: 'Cancelado',   bg: '#FFCDD2', text: '#C62828' },
+            cancelled:  { label: 'Cancelado',   bg: '#FFCDD2', text: '#C62828' },
         };
 
         const mapped         = statusMap[delivery.status] ?? { label: delivery.status, bg: '#E0E0E0', text: '#616161' };
@@ -122,7 +124,7 @@ export class HomeViewModel extends Observable {
                     this.setDeliveries(local);
                 } else {
                     this.hasError     = true;
-                    this.errorMessage = error.message ?? 'Error loading deliveries.';
+                    this.errorMessage = error.message ?? 'Error al cargar las entregas.';
                 }
             }
         } else {

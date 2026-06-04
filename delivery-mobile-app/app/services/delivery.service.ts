@@ -20,7 +20,7 @@ export class DeliveryService {
             headers: this.getAuthHeaders(),
         });
         if (response.statusCode < 200 || response.statusCode >= 300) {
-            throw new Error('Failed to load deliveries. Please try again.');
+            throw new Error('Error al cargar las entregas. Intenta de nuevo.');
         }
         return response.content.toJSON() as Delivery[];
     }
@@ -32,7 +32,7 @@ export class DeliveryService {
             headers: this.getAuthHeaders(),
         });
         if (response.statusCode < 200 || response.statusCode >= 300) {
-            throw new Error('Failed to load delivery details. Please try again.');
+            throw new Error('Error al cargar el detalle de la entrega. Intenta de nuevo.');
         }
         return response.content.toJSON() as DeliveryDetail;
     }
@@ -82,7 +82,7 @@ export class DeliveryService {
         });
         if (response.statusCode < 200 || response.statusCode >= 300) {
             const raw = response.content.toString().trim();
-            let message = 'Failed to create delivery. Please try again.';
+            let message = 'Error al crear la entrega. Intenta de nuevo.';
             if (raw) {
                 try {
                     const data = JSON.parse(raw);

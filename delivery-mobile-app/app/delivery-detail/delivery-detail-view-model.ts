@@ -114,7 +114,7 @@ export class DeliveryDetailViewModel extends Observable {
             this.populateData(data);
         } catch (error: any) {
             this.hasError = true;
-            this.errorMessage = error.message ?? 'Failed to load delivery.';
+            this.errorMessage = error.message ?? 'Error al cargar la entrega.';
         } finally {
             this.isLoading = false;
         }
