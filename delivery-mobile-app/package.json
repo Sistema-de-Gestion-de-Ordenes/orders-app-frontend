@@ -8,6 +8,8 @@
     "@nativescript/background-http": "^6.0.2",
     "@nativescript/camera": "^7.0.0",
     "@nativescript/core": "~9.0.0",
+    "@nativescript/firebase-core": "^5.0.2",
+    "@nativescript/firebase-messaging": "^5.0.2",
     "@nativescript/imagepicker": "^5.0.0",
     "@nativescript/theme": "^3.1.0"
   },

@@ -5,10 +5,12 @@ export const API_CONFIG = {
     // iOS simulator:   'http://localhost:5076'
     BASE_URL: 'http://10.0.2.2:5076',
     ENDPOINTS: {
-        LOGIN: '/auth/login',
-        DELIVERIES: '/deliveries',
-        CLIENTS:    '/clients',         
-        DRIVERS:    '/drivers',          
-        CREATE_CLIENT: '/clients',
+        LOGIN:                '/auth/login',
+        DELIVERIES:           '/deliveries',
+        CLIENTS:              '/clients',
+        DRIVERS:              '/drivers',
+        CREATE_CLIENT:        '/clients',
+        REGISTER_FCM_TOKEN:   '/notifications/fcm-token',
+        UNREGISTER_FCM_TOKEN: '/notifications/register-token',
     }
 };

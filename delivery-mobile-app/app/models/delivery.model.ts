@@ -27,3 +27,26 @@ export interface CreateDeliveryRequest {
     origin: string;
     destination: string;
 }
+
+export interface DeliveryClientDetail {
+    name: string;
+    email: string;
+    registeredSince: string;
+}
+
+export interface DeliveryDriverDetail {
+    id: number;
+    name: string;
+    phone: string;
+    photoUrl: string;
+    verified: boolean;
+}
+
+export interface DeliveryDetail {
+    id: number;
+    status: string;
+    origin: string;
+    destination: string;
+    client: DeliveryClientDetail;
+    driver: DeliveryDriverDetail;
+}

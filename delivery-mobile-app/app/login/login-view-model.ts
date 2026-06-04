@@ -1,5 +1,6 @@
 import { Observable, Frame } from '@nativescript/core';
 import { AuthService } from '../services/auth.service';
+import { FirebaseService } from '../services/firebase.service';
 
 export class LoginViewModel extends Observable {
     private _email: string = '';
@@ -52,7 +53,7 @@ export class LoginViewModel extends Observable {
 
     async onLoginTap(): Promise<void> {
         if (!this._email.trim() || !this._password.trim()) {
-            this.errorMessage = 'Please enter your email and password.';
+            this.errorMessage = 'Por favor ingresa tu correo y contraseña.';
             return;
         }
 
@@ -62,12 +63,15 @@ export class LoginViewModel extends Observable {
         try {
             const token = await this.authService.login(this._email, this._password);
             this.authService.saveToken(token);
+            new FirebaseService().initializeAndRegister().catch((e) =>
+                console.error('FCM registration error:', e)
+            );
             Frame.topmost().navigate({
                 moduleName: 'home/home-page',
                 clearHistory: true,
             });
         } catch (error: any) {
-            this.errorMessage = error.message || 'Login failed. Please try again.';
+            this.errorMessage = error.message || 'Error al iniciar sesión. Intenta de nuevo.';
         } finally {
             this.isLoading = false;
         }

@@ -1,5 +1,6 @@
 import { ApplicationSettings, Http } from '@nativescript/core';
 import { API_CONFIG } from '../config/api.config';
+import { FirebaseService } from './firebase.service';
 
 export class AuthService {
     async login(email: string, password: string): Promise<string> {
@@ -13,11 +14,11 @@ export class AuthService {
         const raw = response.content?.toJSON?.() ?? null;
 
         if (response.statusCode < 200 || response.statusCode >= 300) {
-            throw new Error(raw?.error ?? 'Login failed.');
+            throw new Error(raw?.error ?? 'Error al iniciar sesión.');
         }
 
         if (!raw?.token) {
-            throw new Error('Invalid server response: missing token.');
+            throw new Error('Respuesta inválida del servidor.');
         }
 
         return raw.token as string;
@@ -44,7 +45,17 @@ export class AuthService {
         return !!this.getToken();
     }
 
+    isAdmin(): boolean {
+        try {
+            const role = this.getRole() ?? this._extractRoleFromToken(this.getToken() ?? '');
+            return role === 'admin';
+        } catch {
+            return false;
+        }
+    }
+
     logout(): void {
+        new FirebaseService().unregisterCurrentToken().catch(() => {});
         ApplicationSettings.remove('auth_token');
         ApplicationSettings.remove('auth_role');
     }
