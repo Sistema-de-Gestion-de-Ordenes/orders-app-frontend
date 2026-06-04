@@ -16,5 +16,7 @@ export function onGoToClientes() {
 }
 
 export function onGoToEntregas() {}
-export function onGoToRepartidores() {}
+export function onGoToRepartidores() {
+  Frame.topmost().navigate({ moduleName: 'drivers/create-driver-page' })
+}
 export function onGoToPerfil() {}

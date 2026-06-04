@@ -3,6 +3,7 @@ import { DeliveryService } from '../services/delivery.service';
 import { SqliteService } from '../services/sqlite.service';
 import { ConnectivityService } from '../services/connectivity.service';
 import { NotificationService } from '../services/notification.service';
+import { AuthService } from '../services/auth.service';
 import { Delivery } from '../models/delivery.model';
 
 export class DeliveryItem extends Observable {
@@ -16,8 +17,9 @@ export class DeliveryItem extends Observable {
     statusColor: string;
     statusTextColor: string;
     route: string;
+    isAdmin: boolean;
 
-    constructor(delivery: Delivery) {
+    constructor(delivery: Delivery, isAdmin: boolean) {
         super();
         this.id          = delivery.id;
         this.client      = delivery.client;
@@ -26,6 +28,7 @@ export class DeliveryItem extends Observable {
         this.destination = delivery.destination;
         this.status      = delivery.status;
         this.route       = `${delivery.origin} → ${delivery.destination}`;
+        this.isAdmin     = isAdmin;
 
         const statusMap: Record<string, { label: string; bg: string; text: string }> = {
             pending:   { label: 'Pending',    bg: '#E0E0E0', text: '#616161' },
@@ -39,6 +42,13 @@ export class DeliveryItem extends Observable {
         this.statusColor     = mapped.bg;
         this.statusTextColor = mapped.text;
     }
+
+    onEditTap(): void {
+        Frame.topmost().navigate({
+            moduleName: 'edit-delivery/edit-delivery-page',
+            context: { deliveryId: this.id },
+        });
+    }
 }
 
 export class HomeViewModel extends Observable {
@@ -49,9 +59,12 @@ export class HomeViewModel extends Observable {
     private _isEmpty: boolean    = false;
     private _isOffline: boolean  = false;
 
+    private _isAdmin: boolean = false;
+
     private deliveryService     = new DeliveryService();
     private sqliteService       = new SqliteService();
     private connectivityService = new ConnectivityService();
+    private authService         = new AuthService();
 
     constructor() {
         super();
@@ -59,6 +72,7 @@ export class HomeViewModel extends Observable {
     }
 
     private async init(): Promise<void> {
+        this._isAdmin = this.authService.getRole() === 'admin';
         await this.sqliteService.open();
         await this.loadDeliveries();
         new NotificationService().checkPendingNavigation();
@@ -116,20 +130,12 @@ export class HomeViewModel extends Observable {
 
     private setDeliveries(deliveries: Delivery[]): void {
         this._deliveries.splice(0, this._deliveries.length);
-        deliveries.forEach(d => this._deliveries.push(new DeliveryItem(d)));
+        deliveries.forEach(d => this._deliveries.push(new DeliveryItem(d, this._isAdmin)));
         this.isEmpty = this._deliveries.length === 0;
     }
 
     onRetryTap(): void {
         this.loadDeliveries();
-    }
-
-    onDeliveryTap(args: any): void {
-        const delivery = this._deliveries.getItem(args.index);
-        Frame.topmost().navigate({
-            moduleName: 'delivery-detail/delivery-detail-page',
-            context: { deliveryId: delivery.id },
-        });
     }
 
     onAddTap(): void {
