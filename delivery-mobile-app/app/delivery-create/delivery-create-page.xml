@@ -197,7 +197,23 @@
                                returnKeyType="next" />
                 </GridLayout>
 
-                <!-- Sugerencias origen -->
+                <!-- Sugerencias origen - cargando -->
+                <StackLayout visibility="{{ isLoadingOriginSuggestions ? 'visible' : 'collapsed' }}"
+                             margin="0 16 0 16" backgroundColor="#FFFFFF"
+                             borderWidth="1" borderColor="#E0E0E0" borderRadius="10" padding="14">
+                    <ActivityIndicator busy="true" color="#4CAF50" width="28" height="28"
+                                       horizontalAlignment="center" />
+                </StackLayout>
+
+                <!-- Sugerencias origen - sin conexión -->
+                <StackLayout visibility="{{ showOriginOffline ? 'visible' : 'collapsed' }}"
+                             margin="0 16 0 16" backgroundColor="#FFF8E1"
+                             borderWidth="1" borderColor="#FFE082" borderRadius="10" padding="12">
+                    <Label text="Sin conexión. No se pueden mostrar sugerencias."
+                           fontSize="12" color="#F57F17" textWrap="true" textAlignment="center" />
+                </StackLayout>
+
+                <!-- Sugerencias origen - resultados -->
                 <StackLayout visibility="{{ showOriginSuggestions ? 'visible' : 'collapsed' }}"
                              margin="0 16 0 16" backgroundColor="#FFFFFF"
                              borderWidth="1" borderColor="#E0E0E0" borderRadius="10">
@@ -239,7 +255,23 @@
                                returnKeyType="done" />
                 </GridLayout>
 
-                <!-- Sugerencias destino -->
+                <!-- Sugerencias destino - cargando -->
+                <StackLayout visibility="{{ isLoadingDestinationSuggestions ? 'visible' : 'collapsed' }}"
+                             margin="0 16 0 16" backgroundColor="#FFFFFF"
+                             borderWidth="1" borderColor="#E0E0E0" borderRadius="10" padding="14">
+                    <ActivityIndicator busy="true" color="#4CAF50" width="28" height="28"
+                                       horizontalAlignment="center" />
+                </StackLayout>
+
+                <!-- Sugerencias destino - sin conexión -->
+                <StackLayout visibility="{{ showDestinationOffline ? 'visible' : 'collapsed' }}"
+                             margin="0 16 0 16" backgroundColor="#FFF8E1"
+                             borderWidth="1" borderColor="#FFE082" borderRadius="10" padding="12">
+                    <Label text="Sin conexión. No se pueden mostrar sugerencias."
+                           fontSize="12" color="#F57F17" textWrap="true" textAlignment="center" />
+                </StackLayout>
+
+                <!-- Sugerencias destino - resultados -->
                 <StackLayout visibility="{{ showDestinationSuggestions ? 'visible' : 'collapsed' }}"
                              margin="0 16 0 16" backgroundColor="#FFFFFF"
                              borderWidth="1" borderColor="#E0E0E0" borderRadius="10">

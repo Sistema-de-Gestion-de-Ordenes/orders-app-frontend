@@ -74,14 +74,4 @@ export class EditDeliveryService {
         }
     }
 
-    async searchAddress(query: string): Promise<AddressSuggestion[]> {
-        const response = await Http.request({
-            url: `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5`,
-            method: 'GET',
-            headers: { 'User-Agent': 'GestionOrdenesApp/1.0' },
-        });
-
-        const raw = response.content?.toJSON?.() ?? [];
-        return (raw as any[]).map(item => ({ displayName: item.display_name as string }));
-    }
 }

@@ -124,10 +124,28 @@
                             <StackLayout width="2" height="5" backgroundColor="#BDBDBD"
                                          horizontalAlignment="center" />
                         </StackLayout>
-                        <TextField col="1" text="{{ origin }}" hint="Ej. Calle Mayor 123, Madrid"
+                        <TextField col="1" text="{{ origin }}" hint="Ej. San José, Cartago..."
                                    autocorrect="false" backgroundColor="transparent"
                                    borderWidth="0" padding="0" />
                     </GridLayout>
+
+                    <!-- Origen - cargando -->
+                    <StackLayout visibility="{{ isLoadingOriginSuggestions ? 'visible' : 'collapsed' }}"
+                                 backgroundColor="#FFFFFF" borderWidth="1" borderColor="#E0E0E0"
+                                 borderRadius="10" padding="14" marginTop="-12" marginBottom="4">
+                        <ActivityIndicator busy="true" color="#4CAF50" width="28" height="28"
+                                           horizontalAlignment="center" />
+                    </StackLayout>
+
+                    <!-- Origen - sin conexión -->
+                    <StackLayout visibility="{{ showOriginOffline ? 'visible' : 'collapsed' }}"
+                                 backgroundColor="#FFF8E1" borderWidth="1" borderColor="#FFE082"
+                                 borderRadius="10" padding="12" marginTop="-12" marginBottom="4">
+                        <Label text="Sin conexión. No se pueden mostrar sugerencias."
+                               fontSize="12" color="#F57F17" textWrap="true" textAlignment="center" />
+                    </StackLayout>
+
+                    <!-- Origen - resultados -->
                     <ListView items="{{ originSuggestions }}" itemTap="{{ onOriginSuggestionTap }}"
                               height="{{ originListHeight }}"
                               visibility="{{ showOriginSuggestions ? 'visible' : 'collapsed' }}"
@@ -147,10 +165,28 @@
                             <StackLayout width="2" height="5" backgroundColor="#BDBDBD"
                                          horizontalAlignment="center" />
                         </StackLayout>
-                        <TextField col="1" text="{{ destination }}" hint="Ej. Av. Diagonal 45, Barcelona"
+                        <TextField col="1" text="{{ destination }}" hint="Ej. Alajuela, Heredia..."
                                    autocorrect="false" backgroundColor="transparent"
                                    borderWidth="0" padding="0" />
                     </GridLayout>
+
+                    <!-- Destino - cargando -->
+                    <StackLayout visibility="{{ isLoadingDestinationSuggestions ? 'visible' : 'collapsed' }}"
+                                 backgroundColor="#FFFFFF" borderWidth="1" borderColor="#E0E0E0"
+                                 borderRadius="10" padding="14" marginTop="-12" marginBottom="4">
+                        <ActivityIndicator busy="true" color="#4CAF50" width="28" height="28"
+                                           horizontalAlignment="center" />
+                    </StackLayout>
+
+                    <!-- Destino - sin conexión -->
+                    <StackLayout visibility="{{ showDestinationOffline ? 'visible' : 'collapsed' }}"
+                                 backgroundColor="#FFF8E1" borderWidth="1" borderColor="#FFE082"
+                                 borderRadius="10" padding="12" marginTop="-12" marginBottom="4">
+                        <Label text="Sin conexión. No se pueden mostrar sugerencias."
+                               fontSize="12" color="#F57F17" textWrap="true" textAlignment="center" />
+                    </StackLayout>
+
+                    <!-- Destino - resultados -->
                     <ListView items="{{ destinationSuggestions }}" itemTap="{{ onDestinationSuggestionTap }}"
                               height="{{ destinationListHeight }}"
                               visibility="{{ showDestinationSuggestions ? 'visible' : 'collapsed' }}"
