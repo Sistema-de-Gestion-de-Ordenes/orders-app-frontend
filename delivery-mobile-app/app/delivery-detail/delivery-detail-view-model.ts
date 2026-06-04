@@ -125,12 +125,29 @@ export class DeliveryDetailViewModel extends Observable {
     }
 
     async onChangeStatusTap(): Promise<void> {
-        const options = [
-            { label: 'Pendiente',    value: 'pending'   },
-            { label: 'En tránsito', value: 'en_way'    },
-            { label: 'Entregado',   value: 'delivered' },
-            { label: 'Cancelado',   value: 'canceled'  },
+        const allOptions = [
+            { label: 'Pendiente',   value: 'pending'    },
+            { label: 'En tránsito', value: 'in_transit' },
+            { label: 'Entregado',   value: 'delivered'  },
+            { label: 'Cancelado',   value: 'cancelled'  },
         ];
+
+        const validNext: Record<string, string[]> = {
+            pending:    ['in_transit'],
+            in_transit: ['delivered', 'cancelled'],
+        };
+
+        const allowed = validNext[this._currentStatus] ?? [];
+        const options = allOptions.filter(o => allowed.includes(o.value));
+
+        if (options.length === 0) {
+            await Dialogs.alert({
+                title: 'Sin cambios disponibles',
+                message: 'Esta entrega no puede cambiar de estado.',
+                okButtonText: 'Aceptar',
+            });
+            return;
+        }
 
         const result = await Dialogs.action({
             title: 'Cambiar estado de entrega',
@@ -195,6 +212,7 @@ export class DeliveryDetailViewModel extends Observable {
             en_way:     { label: 'En tránsito', bg: '#BBDEFB', text: '#1565C0' },
             delivered:  { label: 'Entregado',   bg: '#C8E6C9', text: '#2E7D32' },
             canceled:   { label: 'Cancelado',   bg: '#FFCDD2', text: '#C62828' },
+            cancelled:  { label: 'Cancelado',   bg: '#FFCDD2', text: '#C62828' },
         };
         return map[status] ?? { label: status, bg: '#E0E0E0', text: '#616161' };
     }
