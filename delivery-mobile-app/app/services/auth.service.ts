@@ -46,16 +46,8 @@ export class AuthService {
     }
 
     isAdmin(): boolean {
-        const token = this.getToken();
-        if (!token) return false;
         try {
-            const parts = token.split('.');
-            if (parts.length !== 3) return false;
-            const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-            const pad = (4 - (base64.length % 4)) % 4;
-            const payload = JSON.parse(atob(base64 + '='.repeat(pad)));
-            const role = payload?.role
-                ?? payload?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+            const role = this.getRole() ?? this._extractRoleFromToken(this.getToken() ?? '');
             return role === 'admin';
         } catch {
             return false;
