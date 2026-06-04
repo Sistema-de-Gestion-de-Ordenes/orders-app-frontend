@@ -62,6 +62,7 @@
             <!-- Deliveries list -->
             <ListView row="1" items="{{ deliveries }}"
                       separatorColor="transparent"
+                      itemTap="{{ onDeliveryTap }}"
                       visibility="{{ !isLoading &amp;&amp; !hasError &amp;&amp; !isEmpty ? 'visible' : 'collapsed' }}">
                 <ListView.itemTemplate>
                     <GridLayout rows="auto" columns="*" margin="8 16 0 16"
