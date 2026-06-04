@@ -8,6 +8,7 @@ export class DeliveryDetailViewModel extends Observable {
     private _hasError = false;
     private _errorMessage = '';
     private _isUpdatingStatus = false;
+    private _isDeletingDelivery = false;
     private _isAdmin = false;
 
     private _title = '';
@@ -55,6 +56,9 @@ export class DeliveryDetailViewModel extends Observable {
 
     get isUpdatingStatus(): boolean { return this._isUpdatingStatus; }
     set isUpdatingStatus(v: boolean) { this._isUpdatingStatus = v; this.notifyPropertyChange('isUpdatingStatus', v); }
+
+    get isDeletingDelivery(): boolean { return this._isDeletingDelivery; }
+    set isDeletingDelivery(v: boolean) { this._isDeletingDelivery = v; this.notifyPropertyChange('isDeletingDelivery', v); }
 
     get isAdmin(): boolean { return this._isAdmin; }
 
@@ -122,6 +126,30 @@ export class DeliveryDetailViewModel extends Observable {
 
     onBackTap(): void {
         Frame.topmost().goBack();
+    }
+
+    async onDeleteTap(): Promise<void> {
+        const confirmed = await Dialogs.confirm({
+            title: 'Eliminar entrega',
+            message: `¿Estás seguro de que quieres eliminar ${this._title}? Esta acción no se puede deshacer.`,
+            okButtonText: 'Eliminar',
+            cancelButtonText: 'Cancelar',
+        });
+        if (!confirmed) return;
+
+        this.isDeletingDelivery = true;
+        try {
+            await this.deliveryService.deleteDelivery(this.deliveryId);
+            Frame.topmost().goBack();
+        } catch (e: any) {
+            await Dialogs.alert({
+                title: 'Error',
+                message: e.message ?? 'No se pudo eliminar la entrega.',
+                okButtonText: 'Aceptar',
+            });
+        } finally {
+            this.isDeletingDelivery = false;
+        }
     }
 
     async onChangeStatusTap(): Promise<void> {

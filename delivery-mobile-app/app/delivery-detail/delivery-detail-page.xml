@@ -204,9 +204,15 @@
                      visibility="{{ isAdmin &amp;&amp; !isLoading &amp;&amp; !hasError ? 'visible' : 'collapsed' }}">
             <Button text="{{ isUpdatingStatus ? 'Actualizando...' : 'Cambiar estado' }}"
                     tap="{{ onChangeStatusTap }}"
-                    isEnabled="{{ !isUpdatingStatus }}"
+                    isEnabled="{{ !isUpdatingStatus &amp;&amp; !isDeletingDelivery }}"
                     backgroundColor="#4CAF50" color="#FFFFFF"
                     borderRadius="12" height="52" fontSize="16" fontWeight="bold" />
+            <Button text="{{ isDeletingDelivery ? 'Eliminando...' : 'Eliminar entrega' }}"
+                    tap="{{ onDeleteTap }}"
+                    isEnabled="{{ !isDeletingDelivery &amp;&amp; !isUpdatingStatus }}"
+                    backgroundColor="#E53935" color="#FFFFFF"
+                    borderRadius="12" height="52" fontSize="16" fontWeight="bold"
+                    marginTop="10" />
         </StackLayout>
 
     </GridLayout>

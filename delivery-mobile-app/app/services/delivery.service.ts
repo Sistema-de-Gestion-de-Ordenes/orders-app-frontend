@@ -37,6 +37,23 @@ export class DeliveryService {
         return response.content.toJSON() as DeliveryDetail;
     }
 
+    async deleteDelivery(id: number): Promise<void> {
+        const response = await Http.request({
+            url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DELIVERIES}/${id}`,
+            method: 'DELETE',
+            headers: this.getAuthHeaders(),
+        });
+        if (response.statusCode !== 204) {
+            const body = response.content?.toString?.() ?? '';
+            let message = `Error ${response.statusCode}: No se pudo eliminar la entrega.`;
+            try {
+                const parsed = JSON.parse(body);
+                if (parsed?.error) message = parsed.error;
+            } catch {}
+            throw new Error(message);
+        }
+    }
+
     async updateDeliveryStatus(id: number, status: string): Promise<void> {
         const response = await Http.request({
             url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DELIVERIES}/${id}/status`,
@@ -47,7 +64,7 @@ export class DeliveryService {
         if (response.statusCode < 200 || response.statusCode >= 300) {
             const body = response.content?.toString?.() ?? '';
             console.error(`updateDeliveryStatus failed — status: ${response.statusCode}, body: ${body}`);
-            let message = `Error ${response.statusCode}: Failed to update delivery status.`;
+            let message = `Error ${response.statusCode}: No se pudo actualizar el estado.`;
             try {
                 const parsed = JSON.parse(body);
                 if (parsed?.message || parsed?.error) message = parsed.message ?? parsed.error;
