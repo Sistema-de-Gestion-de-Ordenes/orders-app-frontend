@@ -4,7 +4,7 @@ export interface Delivery {
     driver: string;
     origin: string;
     destination: string;
-    status: 'pending' | 'en_way' | 'delivered' | 'canceled';
+    status: string;
 }
 
 export interface Client {
@@ -38,7 +38,7 @@ export interface DeliveryDriverDetail {
     id: number;
     name: string;
     phone: string;
-    photoUrl: string;
+    photoUrl?: string;
     verified: boolean;
 }
 

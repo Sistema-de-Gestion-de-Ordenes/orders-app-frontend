@@ -1,6 +1,7 @@
 import { Observable, Frame, Dialogs } from '@nativescript/core';
 import { DeliveryService } from '../services/delivery.service';
 import { AuthService } from '../services/auth.service';
+import { NotificationService } from '../services/notification.service';
 import { DeliveryDetail } from '../models/delivery.model';
 
 export class DeliveryDetailViewModel extends Observable {
@@ -196,6 +197,10 @@ export class DeliveryDetailViewModel extends Observable {
             this.statusLabel     = s.label;
             this.statusColor     = s.bg;
             this.statusTextColor = s.text;
+            new NotificationService().showLocalNotification(
+                'Estado actualizado',
+                `${this._title} cambió a "${s.label}".`
+            );
         } catch (e: any) {
             await Dialogs.alert({
                 title: 'Error',
