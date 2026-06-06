@@ -83,7 +83,7 @@
                         <!-- Divider -->
                         <StackLayout height="1" backgroundColor="#F0F0F0" margin="0 14" />
 
-                        <!-- Participantes -->
+                        <!-- Participants -->
                         <GridLayout columns="*, 1, *" padding="12 14 12 14">
                             <StackLayout col="0" orientation="horizontal">
                                 <StackLayout width="40" height="40" borderRadius="20"
@@ -125,7 +125,7 @@
                         <!-- Divider -->
                         <StackLayout height="1" backgroundColor="#F0F0F0" margin="0 14" />
 
-                        <!-- Ruta -->
+                        <!-- Route -->
                         <StackLayout padding="10 14 14 14">
                             <GridLayout columns="auto, *" marginBottom="6">
                                 <Label col="0" text="⊙" fontSize="16" color="#4CAF50"

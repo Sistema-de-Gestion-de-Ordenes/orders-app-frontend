@@ -6,8 +6,9 @@
         <!-- Custom header -->
         <GridLayout row="0" columns="40, *, 40" backgroundColor="#FFFFFF"
                     paddingTop="28" paddingBottom="12" paddingLeft="16" paddingRight="16">
-            <Label col="0" text="‹" fontSize="28" color="#1A1A1A"
-                   verticalAlignment="middle" tap="{{ onBack }}" />
+            <StackLayout col="0" tap="{{ onBack }}" width="40" verticalAlignment="middle">
+                <Label text="‹" fontSize="28" color="#1A1A1A" textAlignment="center" />
+            </StackLayout>
             <Label col="1" text="Crear repartidor" fontSize="18" fontWeight="bold"
                    color="#1A1A1A" textAlignment="center" verticalAlignment="middle" />
             <Label col="2" text="" />
@@ -41,7 +42,7 @@
                 <Label text="Entregas" class="nav-label" />
             </StackLayout>
 
-            <!-- Clientes -->
+            <!-- Clients -->
             <StackLayout col="1" class="nav-item" tap="{{ onGoToClientes }}">
                 <StackLayout width="24" height="18" horizontalAlignment="center" marginBottom="4">
                     <StackLayout width="8" height="8" borderRadius="4"
@@ -56,7 +57,7 @@
                 <Label text="Clientes" class="nav-label" />
             </StackLayout>
 
-            <!-- Repartidores (activo) -->
+            <!-- Drivers (active) -->
             <StackLayout col="2" class="nav-item">
                 <StackLayout width="24" height="20" horizontalAlignment="center" marginBottom="4">
                     <StackLayout width="20" height="12" borderRadius="2"
@@ -74,7 +75,7 @@
                 <Label text="Repartidores" class="nav-label-active" />
             </StackLayout>
 
-            <!-- Perfil -->
+            <!-- Profile -->
             <StackLayout col="3" class="nav-item" tap="{{ onGoToPerfil }}">
                 <StackLayout width="24" height="18" horizontalAlignment="center" marginBottom="4">
                     <StackLayout width="8" height="8" borderRadius="4"
@@ -166,7 +167,7 @@
                            class="text-small" textWrap="true" />
                 </StackLayout>
 
-                <!-- Nombre Completo -->
+                <!-- Full name -->
                 <Label text="Nombre Completo" class="label-field" marginTop="20" />
                 <GridLayout columns="auto, *" class="input-field">
                     <StackLayout col="0" width="16" marginRight="12" verticalAlignment="middle">
@@ -184,7 +185,7 @@
                                borderWidth="0" padding="0" />
                 </GridLayout>
 
-                <!-- Vehículo -->
+                <!-- Vehicle -->
                 <Label text="Vehículo" class="label-field" />
                 <GridLayout columns="auto, *" class="input-field">
                     <StackLayout col="0" width="16" marginRight="12" verticalAlignment="middle">
@@ -205,7 +206,7 @@
                                borderWidth="0" padding="0" />
                 </GridLayout>
 
-                <!-- Placas -->
+                <!-- License plates -->
                 <Label text="Placas" class="label-field" />
                 <GridLayout columns="auto, *" class="input-field">
                     <StackLayout col="0" width="16" marginRight="12" verticalAlignment="middle">
@@ -221,7 +222,7 @@
                                backgroundColor="transparent" borderWidth="0" padding="0" />
                 </GridLayout>
 
-                <!-- Teléfono -->
+                <!-- Phone -->
                 <Label text="Teléfono" class="label-field" />
                 <GridLayout columns="auto, *" class="input-field">
                     <StackLayout col="0" width="16" marginRight="12" verticalAlignment="middle">
@@ -250,7 +251,7 @@
                         tap="{{ onSave }}" isEnabled="{{ !isLoading }}"
                         class="btn-primary" marginTop="8" />
 
-                <!-- Repartidores Registrados -->
+                <!-- Registered drivers -->
                 <GridLayout columns="*, auto" marginTop="24" marginBottom="8"
                             paddingTop="16" borderTopWidth="1" borderTopColor="#EEEEEE">
                     <Label col="0" text="Repartidores Registrados" fontSize="14"
