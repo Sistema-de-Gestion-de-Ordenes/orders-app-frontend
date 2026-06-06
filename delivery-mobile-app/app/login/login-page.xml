@@ -1,14 +1,15 @@
-<Page navigatingTo="onNavigatingTo" xmlns="http://schemas.nativescript.org/tns.xsd">
+<Page navigatingTo="onNavigatingTo" actionBarHidden="true"
+      xmlns="http://schemas.nativescript.org/tns.xsd">
 
     <ScrollView>
         <StackLayout class="page-container">
 
             <!-- App logo placeholder -->
-            <StackLayout width="72" height="72" borderRadius="18" backgroundColor="#4CAF50"
-                         horizontalAlignment="center" marginTop="48" marginBottom="12">
-                <Label text="⚡" fontSize="36" color="#FFFFFF" textAlignment="center"
-                       verticalAlignment="middle" />
-            </StackLayout>
+            <GridLayout width="72" height="72" borderRadius="18" backgroundColor="#4CAF50"
+                        horizontalAlignment="center" marginTop="80" marginBottom="12">
+                <Label text="⚡" fontSize="36" color="#FFFFFF"
+                       textAlignment="center" verticalAlignment="middle" />
+            </GridLayout>
 
             <!-- Subtitle -->
             <Label text="Gestión de logística inteligente" class="subtitle" marginBottom="32" />

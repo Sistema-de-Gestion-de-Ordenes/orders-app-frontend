@@ -1,19 +1,21 @@
-import { Observable, ObservableArray, Frame, alert } from '@nativescript/core';
+import { Observable, ObservableArray, Frame, alert, ImageSource } from '@nativescript/core';
 import { DeliveryService } from '../services/delivery.service';
 import { GeocodingService } from '../services/geocoding.service';
-
-// ── Internal types for list items ────────────────────────────────────────────
-// Each item exposes `isSelected` so the XML can toggle the radio button color.
+import { API_CONFIG } from '../config/api.config';
 
 interface ClientItem {
     id: number;
-    label: string;       // display name
+    label: string;
+    photoSource: ImageSource | null;
+    hasPhoto: boolean;
     isSelected: boolean;
 }
 
 interface DriverItem {
     id: number;
-    label: string;       // "Name — Vehicle (Plates)"
+    label: string;
+    photoSource: ImageSource | null;
+    hasPhoto: boolean;
     isSelected: boolean;
 }
 
@@ -154,17 +156,45 @@ export class CreateDeliveryViewModel extends Observable {
             this._clients.splice(0, this._clients.length);
             this._drivers.splice(0, this._drivers.length);
 
-            clients.forEach((c, i) => this._clients.push({
-                id:         c.id,
-                label:      c.name,
-                isSelected: i === 0,
-            }));
+            clients.forEach((c, i) => {
+                const item: ClientItem = {
+                    id:          c.id,
+                    label:       c.name,
+                    photoSource: null,
+                    hasPhoto:    false,
+                    isSelected:  i === 0,
+                };
+                this._clients.push(item);
+                if (c.photoUrl) {
+                    const idx = i;
+                    ImageSource.fromUrl(`${API_CONFIG.BASE_URL}${c.photoUrl}`)
+                        .then(src => {
+                            const current = this._clients.getItem(idx);
+                            this._clients.setItem(idx, { ...current, photoSource: src, hasPhoto: true });
+                        })
+                        .catch(() => {});
+                }
+            });
 
-            drivers.forEach((d, i) => this._drivers.push({
-                id:         d.id,
-                label:      `${d.name} — ${d.vehicle} (${d.plates})`,
-                isSelected: i === 0,
-            }));
+            drivers.forEach((d, i) => {
+                const item: DriverItem = {
+                    id:          d.id,
+                    label:       `${d.name} — ${d.vehicle} (${d.plates})`,
+                    photoSource: null,
+                    hasPhoto:    false,
+                    isSelected:  i === 0,
+                };
+                this._drivers.push(item);
+                if (d.photoUrl) {
+                    const idx = i;
+                    ImageSource.fromUrl(`${API_CONFIG.BASE_URL}${d.photoUrl}`)
+                        .then(src => {
+                            const current = this._drivers.getItem(idx);
+                            this._drivers.setItem(idx, { ...current, photoSource: src, hasPhoto: true });
+                        })
+                        .catch(() => {});
+                }
+            });
 
             this._selectedClientIndex = 0;
             this._selectedDriverIndex = 0;

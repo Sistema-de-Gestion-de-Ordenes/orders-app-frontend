@@ -1,7 +1,8 @@
-import { Observable, Frame, Dialogs } from '@nativescript/core';
+import { Observable, Frame, Dialogs, ImageSource } from '@nativescript/core';
 import { DeliveryService } from '../services/delivery.service';
 import { AuthService } from '../services/auth.service';
 import { DeliveryDetail } from '../models/delivery.model';
+import { API_CONFIG } from '../config/api.config';
 
 export class DeliveryDetailViewModel extends Observable {
     private _isLoading = true;
@@ -21,10 +22,13 @@ export class DeliveryDetailViewModel extends Observable {
     private _clientName = '';
     private _clientEmail = '';
     private _clientRegisteredSince = '';
+    private _clientPhotoSource: ImageSource | null = null;
+    private _hasClientPhoto = false;
 
     private _driverName = '';
     private _driverPhone = '';
-    private _driverPhotoUrl = '';
+    private _driverPhotoSource: ImageSource | null = null;
+    private _hasDriverPhoto = false;
     private _driverVerified = false;
 
     private _origin = '';
@@ -86,14 +90,31 @@ export class DeliveryDetailViewModel extends Observable {
     get clientRegisteredSince(): string { return this._clientRegisteredSince; }
     set clientRegisteredSince(v: string) { this._clientRegisteredSince = v; this.notifyPropertyChange('clientRegisteredSince', v); }
 
+    get clientPhotoSource(): ImageSource | null { return this._clientPhotoSource; }
+    set clientPhotoSource(v: ImageSource | null) {
+        this._clientPhotoSource = v;
+        this._hasClientPhoto = v !== null;
+        this.notifyPropertyChange('clientPhotoSource', v);
+        this.notifyPropertyChange('hasClientPhoto', this._hasClientPhoto);
+    }
+
+    get hasClientPhoto(): boolean { return this._hasClientPhoto; }
+
     get driverName(): string { return this._driverName; }
     set driverName(v: string) { this._driverName = v; this.notifyPropertyChange('driverName', v); }
 
     get driverPhone(): string { return this._driverPhone; }
     set driverPhone(v: string) { this._driverPhone = v; this.notifyPropertyChange('driverPhone', v); }
 
-    get driverPhotoUrl(): string { return this._driverPhotoUrl; }
-    set driverPhotoUrl(v: string) { this._driverPhotoUrl = v; this.notifyPropertyChange('driverPhotoUrl', v); }
+    get driverPhotoSource(): ImageSource | null { return this._driverPhotoSource; }
+    set driverPhotoSource(v: ImageSource | null) {
+        this._driverPhotoSource = v;
+        this._hasDriverPhoto = v !== null;
+        this.notifyPropertyChange('driverPhotoSource', v);
+        this.notifyPropertyChange('hasDriverPhoto', this._hasDriverPhoto);
+    }
+
+    get hasDriverPhoto(): boolean { return this._hasDriverPhoto; }
 
     get driverVerified(): boolean { return this._driverVerified; }
     set driverVerified(v: boolean) { this._driverVerified = v; this.notifyPropertyChange('driverVerified', v); }
@@ -226,8 +247,19 @@ export class DeliveryDetailViewModel extends Observable {
 
         this.driverName     = data.driver.name;
         this.driverPhone    = data.driver.phone;
-        this.driverPhotoUrl = data.driver.photoUrl ?? '';
         this.driverVerified = data.driver.verified;
+
+        if (data.client.photoUrl) {
+            ImageSource.fromUrl(`${API_CONFIG.BASE_URL}${data.client.photoUrl}`)
+                .then(src => { this.clientPhotoSource = src; })
+                .catch(err => { console.error('Error cargando foto del cliente:', err); });
+        }
+
+        if (data.driver.photoUrl) {
+            ImageSource.fromUrl(`${API_CONFIG.BASE_URL}${data.driver.photoUrl}`)
+                .then(src => { this.driverPhotoSource = src; })
+                .catch(err => { console.error('Error cargando foto del repartidor:', err); });
+        }
 
         this.origin      = data.origin;
         this.destination = data.destination;
