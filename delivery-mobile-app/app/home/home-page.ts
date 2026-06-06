@@ -11,6 +11,10 @@ export function onNavigatingTo(args: NavigatedData) {
   page.bindingContext = new HomeViewModel()
 }
 
+export function onGoToHistory() {
+  Frame.topmost().navigate({ moduleName: 'delivery-history/delivery-history-page' })
+}
+
 export function onGoToClientes() {
   Frame.topmost().navigate({ moduleName: 'clients/create-client-page' })
 }

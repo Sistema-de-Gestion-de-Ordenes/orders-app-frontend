@@ -56,3 +56,16 @@ export interface DeliveryDetail {
     client: DeliveryClientDetail;
     driver: DeliveryDriverDetail;
 }
+
+export interface DeliveryHistory {
+    id: number;
+    client: string;
+    clientPhotoUrl?: string;
+    driver: string;
+    driverPhotoUrl?: string;
+    origin: string;
+    destination: string;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+}

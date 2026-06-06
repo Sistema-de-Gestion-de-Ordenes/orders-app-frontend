@@ -11,8 +11,10 @@
                 </StackLayout>
                 <Label col="1" text="Entregas" fontSize="18" fontWeight="bold"
                        color="#1A1A1A" textAlignment="center" verticalAlignment="middle" />
-                <Label col="2" text="⊽" fontSize="20" color="#1A1A1A"
-                       verticalAlignment="middle" horizontalAlignment="right" />
+                <Label col="2" text="Historial" fontSize="13" fontWeight="bold"
+                       color="#4CAF50" verticalAlignment="middle" horizontalAlignment="right"
+                       visibility="{{ isAdmin ? 'visible' : 'collapsed' }}"
+                       tap="onGoToHistory" />
             </GridLayout>
         </ActionBar.titleView>
     </ActionBar>

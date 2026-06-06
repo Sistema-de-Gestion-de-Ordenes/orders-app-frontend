@@ -1,6 +1,6 @@
 import { Http, ApplicationSettings } from '@nativescript/core';
 import { API_CONFIG } from '../config/api.config';
-import { Client, Driver, CreateDeliveryRequest, Delivery, DeliveryDetail } from '../models/delivery.model';
+import { Client, Driver, CreateDeliveryRequest, Delivery, DeliveryDetail, DeliveryHistory } from '../models/delivery.model';
 
 export class DeliveryService {
     private getAuthHeaders(): Record<string, string> {
@@ -71,6 +71,18 @@ export class DeliveryService {
             } catch {}
             throw new Error(message);
         }
+    }
+
+    async getDeliveryHistory(): Promise<DeliveryHistory[]> {
+        const response = await Http.request({
+            url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DELIVERY_HISTORY}`,
+            method: 'GET',
+            headers: this.getAuthHeaders(),
+        });
+        if (response.statusCode < 200 || response.statusCode >= 300) {
+            throw new Error('Error al cargar el historial de entregas. Intenta de nuevo.');
+        }
+        return response.content.toJSON() as DeliveryHistory[];
     }
 
     async createDelivery(payload: CreateDeliveryRequest): Promise<void> {

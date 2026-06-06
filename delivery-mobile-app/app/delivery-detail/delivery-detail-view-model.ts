@@ -38,13 +38,13 @@ export class DeliveryDetailViewModel extends Observable {
     private deliveryService = new DeliveryService();
     private deliveryId: number;
 
-    constructor(deliveryId: number) {
+    constructor(deliveryId: number, fromHistory: boolean = false) {
         super();
         this.deliveryId = deliveryId;
         const paddedId = String(deliveryId).padStart(3, '0');
         this._title = `Entrega #${paddedId}`;
         this._deliveryIdLabel = `ID #${paddedId}`;
-        this._isAdmin = new AuthService().isAdmin();
+        this._isAdmin = !fromHistory && new AuthService().isAdmin();
         this.loadDelivery();
     }
 
