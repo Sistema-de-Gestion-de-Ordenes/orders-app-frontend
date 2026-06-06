@@ -19,11 +19,11 @@
         </ActionBar.titleView>
     </ActionBar>
 
-    <!-- rows="*, auto" para que el contenido ocupe el espacio y el nav quede abajo -->
     <GridLayout rows="*, auto">
 
         <!-- ── CONTENT ROW ── -->
-        <GridLayout row="0" rows="auto, *">
+        <!-- rows: offline banner | filter chips | contenido -->
+        <GridLayout row="0" rows="auto, auto, *">
 
             <!-- Offline banner -->
             <GridLayout row="0" columns="auto, *" class="offline-banner"
@@ -34,15 +34,57 @@
                        fontSize="12" color="#757575" verticalAlignment="middle" textWrap="true" />
             </GridLayout>
 
+            <!-- ── FILTER CHIPS ──
+                 Cada chip usa su propio tap handler y un booleano dedicado para
+                 el color activo. NativeScript no evalúa comparaciones (===) en
+                 expresiones de binding XML, así que NO usar activeFilter === 'x'.
+            -->
+            <ScrollView row="1" orientation="horizontal" scrollBarIndicatorVisible="false"
+                        padding="10 12 6 12" backgroundColor="#FFFFFF">
+                <StackLayout orientation="horizontal">
+
+                    <Label text="Todas" tap="{{ onFilterAll }}"
+                           margin="0 4" padding="6 16" borderRadius="20"
+                           fontSize="12" fontWeight="bold"
+                           backgroundColor="{{ filterAll      ? '#4CAF50' : '#F0F0F0' }}"
+                           color=          "{{ filterAll      ? '#FFFFFF' : '#616161' }}" />
+
+                    <Label text="Pendiente" tap="{{ onFilterPending }}"
+                           margin="0 4" padding="6 16" borderRadius="20"
+                           fontSize="12" fontWeight="bold"
+                           backgroundColor="{{ filterPending   ? '#616161' : '#F0F0F0' }}"
+                           color=          "{{ filterPending   ? '#FFFFFF' : '#616161' }}" />
+
+                    <Label text="En tránsito" tap="{{ onFilterInTransit }}"
+                           margin="0 4" padding="6 16" borderRadius="20"
+                           fontSize="12" fontWeight="bold"
+                           backgroundColor="{{ filterInTransit ? '#1565C0' : '#F0F0F0' }}"
+                           color=          "{{ filterInTransit ? '#FFFFFF' : '#616161' }}" />
+
+                    <Label text="Entregado" tap="{{ onFilterDelivered }}"
+                           margin="0 4" padding="6 16" borderRadius="20"
+                           fontSize="12" fontWeight="bold"
+                           backgroundColor="{{ filterDelivered ? '#2E7D32' : '#F0F0F0' }}"
+                           color=          "{{ filterDelivered ? '#FFFFFF' : '#616161' }}" />
+
+                    <Label text="Cancelado" tap="{{ onFilterCanceled }}"
+                           margin="0 4" padding="6 16" borderRadius="20"
+                           fontSize="12" fontWeight="bold"
+                           backgroundColor="{{ filterCanceled  ? '#C62828' : '#F0F0F0' }}"
+                           color=          "{{ filterCanceled  ? '#FFFFFF' : '#616161' }}" />
+
+                </StackLayout>
+            </ScrollView>
+
             <!-- Loading state -->
-            <StackLayout row="1" verticalAlignment="middle" horizontalAlignment="center"
+            <StackLayout row="2" verticalAlignment="middle" horizontalAlignment="center"
                          visibility="{{ isLoading ? 'visible' : 'collapsed' }}">
                 <ActivityIndicator busy="true" color="#4CAF50" width="48" height="48" />
                 <Label text="Cargando entregas..." class="subtitle" marginTop="12" />
             </StackLayout>
 
             <!-- Error state -->
-            <StackLayout row="1" verticalAlignment="middle" horizontalAlignment="center"
+            <StackLayout row="2" verticalAlignment="middle" horizontalAlignment="center"
                          visibility="{{ hasError ? 'visible' : 'collapsed' }}" padding="32">
                 <Label text="⚠️" fontSize="48" textAlignment="center" />
                 <Label text="{{ errorMessage }}" class="subtitle" textWrap="true"
@@ -52,7 +94,7 @@
             </StackLayout>
 
             <!-- Empty state -->
-            <StackLayout row="1" verticalAlignment="middle" horizontalAlignment="center"
+            <StackLayout row="2" verticalAlignment="middle" horizontalAlignment="center"
                          visibility="{{ isEmpty ? 'visible' : 'collapsed' }}" padding="32">
                 <Label text="📦" fontSize="64" textAlignment="center" />
                 <Label text="No hay entregas registradas" class="title"
@@ -62,7 +104,7 @@
             </StackLayout>
 
             <!-- Deliveries list -->
-            <ListView row="1" items="{{ deliveries }}"
+            <ListView row="2" items="{{ deliveries }}"
                       separatorColor="transparent"
                       visibility="{{ !isLoading &amp;&amp; !hasError &amp;&amp; !isEmpty ? 'visible' : 'collapsed' }}">
                 <ListView.itemTemplate>
@@ -198,7 +240,7 @@
             </ListView>
 
             <!-- FAB -->
-            <StackLayout row="1" verticalAlignment="bottom" horizontalAlignment="right"
+            <StackLayout row="2" verticalAlignment="bottom" horizontalAlignment="right"
                          margin="0 24 24 0">
                 <Button text="+" tap="{{ onAddTap }}"
                         width="56" height="56" borderRadius="28"
@@ -211,7 +253,6 @@
         <!-- ── BOTTOM NAV ── -->
         <GridLayout row="1" columns="*, *, *, *" class="bottom-nav">
 
-            <!-- Entregas (activo en esta pantalla) -->
             <StackLayout col="0" class="nav-item" tap="onGoToEntregas">
                 <StackLayout width="18" height="16" borderRadius="2"
                              borderWidth="1.5" borderColor="#4CAF50"
@@ -220,7 +261,6 @@
                 <Label text="Entregas" class="nav-label-active" />
             </StackLayout>
 
-            <!-- Clientes -->
             <StackLayout col="1" class="nav-item" tap="onGoToClientes">
                 <StackLayout width="24" height="18" horizontalAlignment="center" marginBottom="4">
                     <StackLayout width="8" height="8" borderRadius="4"
@@ -235,7 +275,6 @@
                 <Label text="Clientes" class="nav-label" />
             </StackLayout>
 
-            <!-- Repartidores -->
             <StackLayout col="2" class="nav-item" tap="onGoToRepartidores">
                 <StackLayout width="24" height="20" horizontalAlignment="center" marginBottom="4">
                     <StackLayout width="20" height="12" borderRadius="2"
@@ -253,7 +292,6 @@
                 <Label text="Repartidores" class="nav-label" />
             </StackLayout>
 
-            <!-- Perfil -->
             <StackLayout col="3" class="nav-item" tap="onGoToPerfil">
                 <StackLayout width="24" height="18" horizontalAlignment="center" marginBottom="4">
                     <StackLayout width="8" height="8" borderRadius="4"
