@@ -1,6 +1,7 @@
-import { Observable, ObservableArray, Frame } from '@nativescript/core';
+import { Observable, ObservableArray, Frame, ImageSource } from '@nativescript/core';
 import { DeliveryService } from '../services/delivery.service';
 import { DeliveryHistory } from '../models/delivery.model';
+import { API_CONFIG } from '../config/api.config';
 
 export class DeliveryHistoryItem extends Observable {
     id: number;
@@ -12,6 +13,30 @@ export class DeliveryHistoryItem extends Observable {
     statusLabel: string;
     statusColor: string;
     statusTextColor: string;
+
+    private _clientPhoto: ImageSource | null = null;
+    private _driverPhoto: ImageSource | null = null;
+    private _hasClientPhoto = false;
+    private _hasDriverPhoto = false;
+
+    get clientPhoto(): ImageSource | null { return this._clientPhoto; }
+    set clientPhoto(v: ImageSource | null) {
+        this._clientPhoto = v;
+        this._hasClientPhoto = v !== null;
+        this.notifyPropertyChange('clientPhoto', v);
+        this.notifyPropertyChange('hasClientPhoto', this._hasClientPhoto);
+    }
+
+    get driverPhoto(): ImageSource | null { return this._driverPhoto; }
+    set driverPhoto(v: ImageSource | null) {
+        this._driverPhoto = v;
+        this._hasDriverPhoto = v !== null;
+        this.notifyPropertyChange('driverPhoto', v);
+        this.notifyPropertyChange('hasDriverPhoto', this._hasDriverPhoto);
+    }
+
+    get hasClientPhoto(): boolean { return this._hasClientPhoto; }
+    get hasDriverPhoto(): boolean { return this._hasDriverPhoto; }
 
     constructor(delivery: DeliveryHistory) {
         super();
@@ -35,6 +60,18 @@ export class DeliveryHistoryItem extends Observable {
         this.statusLabel     = mapped.label;
         this.statusColor     = mapped.bg;
         this.statusTextColor = mapped.text;
+
+        if (delivery.clientPhotoUrl) {
+            ImageSource.fromUrl(`${API_CONFIG.BASE_URL}${delivery.clientPhotoUrl}`)
+                .then(src => { this.clientPhoto = src; })
+                .catch(() => {});
+        }
+
+        if (delivery.driverPhotoUrl) {
+            ImageSource.fromUrl(`${API_CONFIG.BASE_URL}${delivery.driverPhotoUrl}`)
+                .then(src => { this.driverPhoto = src; })
+                .catch(() => {});
+        }
     }
 
     onDetailTap(): void {
