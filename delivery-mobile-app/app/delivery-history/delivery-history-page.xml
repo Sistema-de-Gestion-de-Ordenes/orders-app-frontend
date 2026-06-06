@@ -1,8 +1,11 @@
 <Page navigatingTo="onNavigatingTo" xmlns="http://schemas.nativescript.org/tns.xsd">
 
-    <ActionBar flat="true" backgroundColor="#FFFFFF" title="Historial"
-               titleAlignment="center" fontSize="18" fontWeight="bold" color="#1A1A1A">
+    <ActionBar flat="true" backgroundColor="#FFFFFF">
         <NavigationButton tap="onGoBack" android.systemIcon="ic_menu_back" />
+        <ActionBar.titleView>
+            <Label text="Historial" fontSize="18" fontWeight="bold"
+                   color="#1A1A1A" textAlignment="center" horizontalAlignment="stretch" />
+        </ActionBar.titleView>
     </ActionBar>
 
     <GridLayout rows="*">
