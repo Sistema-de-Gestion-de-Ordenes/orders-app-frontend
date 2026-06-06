@@ -10,6 +10,7 @@ export const API_CONFIG = {
         CLIENTS:              '/clients',
         DRIVERS:              '/drivers',
         CREATE_CLIENT:        '/clients',
+        DELIVERY_HISTORY:     '/deliveries/history',
         REGISTER_FCM_TOKEN:   '/notifications/fcm-token',
         UNREGISTER_FCM_TOKEN: '/notifications/register-token',
     }

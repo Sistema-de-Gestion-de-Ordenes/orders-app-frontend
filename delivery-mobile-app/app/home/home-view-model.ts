@@ -70,6 +70,8 @@ export class HomeViewModel extends Observable {
 
     private _isAdmin: boolean = false;
 
+    get isAdmin(): boolean { return this._isAdmin; }
+
     private deliveryService     = new DeliveryService();
     private sqliteService       = new SqliteService();
     private connectivityService = new ConnectivityService();
