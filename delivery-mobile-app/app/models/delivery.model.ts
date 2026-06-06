@@ -1,7 +1,9 @@
 export interface Delivery {
     id: number;
     client: string;
+    clientPhotoUrl?: string;
     driver: string;
+    driverPhotoUrl?: string;
     origin: string;
     destination: string;
     status: string;
@@ -12,6 +14,7 @@ export interface Client {
     name: string;
     email: string;
     phone: string;
+    photoUrl?: string;
 }
 
 export interface Driver {
@@ -19,6 +22,8 @@ export interface Driver {
     name: string;
     vehicle: string;
     plates: string;
+    phone: string;
+    photoUrl?: string;
 }
 
 export interface CreateDeliveryRequest {
@@ -32,6 +37,7 @@ export interface DeliveryClientDetail {
     name: string;
     email: string;
     registeredSince: string;
+    photoUrl?: string;
 }
 
 export interface DeliveryDriverDetail {

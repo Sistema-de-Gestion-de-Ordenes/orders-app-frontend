@@ -94,48 +94,30 @@ export class DeliveryService {
     }
 
     // ── Clients ───────────────────────────────────────────────────────────────
-    // TODO: when GET /clients is available, replace the
-    //       return Promise.resolve([...]) block with the real call commented below.
 
     async getClients(): Promise<Client[]> {
-        // ── REPLACE WHEN ENDPOINT IS AVAILABLE ───────────────────────────────
-        // const response = await Http.request({
-        //     url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CLIENTS}`,
-        //     method: 'GET',
-        //     headers: this.getAuthHeaders(),
-        // });
-        // if (response.statusCode < 200 || response.statusCode >= 300) {
-        //     throw new Error('Failed to load client list.');
-        // }
-        // return response.content.toJSON() as Client[];
-        // ─────────────────────────────────────────────────────────────────────
-
-        return Promise.resolve([
-            { id: 1, name: 'Cliente Test', email: '', phone: '' },
-            { id: 2, name: 'Admin',        email: '', phone: '' },
-            { id: 3, name: 'Admin Yeye',   email: '', phone: '' },
-        ]);
+        const response = await Http.request({
+            url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CLIENTS}`,
+            method: 'GET',
+            headers: this.getAuthHeaders(),
+        });
+        if (response.statusCode < 200 || response.statusCode >= 300) {
+            throw new Error(`Error ${response.statusCode} al cargar los clientes.`);
+        }
+        return response.content.toJSON() as Client[];
     }
 
     // ── Drivers ───────────────────────────────────────────────────────────────
-    // TODO: when GET /drivers is available, replace the
-    //       return Promise.resolve([...]) block with the real call commented below.
 
     async getDrivers(): Promise<Driver[]> {
-        // ── REPLACE WHEN ENDPOINT IS AVAILABLE ───────────────────────────────
-        // const response = await Http.request({
-        //     url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DRIVERS}`,
-        //     method: 'GET',
-        //     headers: this.getAuthHeaders(),
-        // });
-        // if (response.statusCode < 200 || response.statusCode >= 300) {
-        //     throw new Error('Failed to load driver list.');
-        // }
-        // return response.content.toJSON() as Driver[];
-        // ─────────────────────────────────────────────────────────────────────
-
-        return Promise.resolve([
-            { id: 1, name: 'Driver Test', vehicle: '', plates: '' },
-        ]);
+        const response = await Http.request({
+            url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DRIVERS}`,
+            method: 'GET',
+            headers: this.getAuthHeaders(),
+        });
+        if (response.statusCode < 200 || response.statusCode >= 300) {
+            throw new Error(`Error ${response.statusCode} al cargar los repartidores.`);
+        }
+        return response.content.toJSON() as Driver[];
     }
 }

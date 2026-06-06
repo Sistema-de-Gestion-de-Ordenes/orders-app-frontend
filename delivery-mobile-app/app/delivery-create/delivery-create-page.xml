@@ -79,18 +79,22 @@
                               height="160" margin="0">
                         <ListView.itemTemplate>
                             <GridLayout columns="auto, *, auto" padding="10 14">
-                                <StackLayout col="0" width="34" height="34" borderRadius="17"
-                                             backgroundColor="#F0F0F0"
-                                             verticalAlignment="middle"
-                                             horizontalAlignment="center"
-                                             margin="0 12 0 0">
-                                    <Label text="👤" fontSize="15" textAlignment="center"
-                                           verticalAlignment="middle" />
-                                </StackLayout>
+                                <GridLayout col="0" width="34" height="34" margin="0 12 0 0"
+                                            verticalAlignment="middle">
+                                    <Image src="{{ photoSource }}" width="34" height="34"
+                                           borderRadius="17" stretch="aspectFill"
+                                           visibility="{{ hasPhoto ? 'visible' : 'collapsed' }}" />
+                                    <StackLayout width="34" height="34" borderRadius="17"
+                                                 backgroundColor="#F0F0F0"
+                                                 horizontalAlignment="center" verticalAlignment="center"
+                                                 visibility="{{ hasPhoto ? 'collapsed' : 'visible' }}">
+                                        <Label text="👤" fontSize="15" textAlignment="center"
+                                               verticalAlignment="middle" />
+                                    </StackLayout>
+                                </GridLayout>
                                 <Label col="1" text="{{ label }}" fontSize="14"
                                        fontWeight="bold" color="#1A1A1A"
                                        verticalAlignment="middle" />
-                                <!-- Radio: relleno verde si isSelected, gris si no -->
                                 <StackLayout col="2" width="22" height="22" borderRadius="11"
                                              borderWidth="2"
                                              borderColor="{{ isSelected ? '#4CAF50' : '#BDBDBD' }}"
@@ -139,14 +143,19 @@
                               height="160" margin="0">
                         <ListView.itemTemplate>
                             <GridLayout columns="auto, *, auto" padding="10 14">
-                                <StackLayout col="0" width="34" height="34" borderRadius="17"
-                                             backgroundColor="#FFF8E1"
-                                             verticalAlignment="middle"
-                                             horizontalAlignment="center"
-                                             margin="0 12 0 0">
-                                    <Label text="🚚" fontSize="15" textAlignment="center"
-                                           verticalAlignment="middle" />
-                                </StackLayout>
+                                <GridLayout col="0" width="34" height="34" margin="0 12 0 0"
+                                            verticalAlignment="middle">
+                                    <Image src="{{ photoSource }}" width="34" height="34"
+                                           borderRadius="17" stretch="aspectFill"
+                                           visibility="{{ hasPhoto ? 'visible' : 'collapsed' }}" />
+                                    <StackLayout width="34" height="34" borderRadius="17"
+                                                 backgroundColor="#FFF8E1"
+                                                 horizontalAlignment="center" verticalAlignment="center"
+                                                 visibility="{{ hasPhoto ? 'collapsed' : 'visible' }}">
+                                        <Label text="🚚" fontSize="15" textAlignment="center"
+                                               verticalAlignment="middle" />
+                                    </StackLayout>
+                                </GridLayout>
                                 <Label col="1" text="{{ label }}" fontSize="14"
                                        fontWeight="bold" color="#1A1A1A"
                                        verticalAlignment="middle" />

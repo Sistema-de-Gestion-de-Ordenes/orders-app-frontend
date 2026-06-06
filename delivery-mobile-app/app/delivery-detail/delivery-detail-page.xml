@@ -79,10 +79,24 @@
                                 <Label col="1" text="Cliente" fontSize="15" fontWeight="bold"
                                        color="#1A1A1A" verticalAlignment="middle" />
                             </GridLayout>
-                            <Label text="{{ clientName }}" fontSize="20" fontWeight="bold"
-                                   color="#1A1A1A" marginBottom="4" />
-                            <Label text="{{ clientEmail }}" fontSize="13" color="#757575"
-                                   marginBottom="10" />
+                            <GridLayout columns="auto, *" marginBottom="10">
+                                <GridLayout col="0" width="56" height="56" marginRight="14">
+                                    <Image src="{{ clientPhotoSource }}" width="56" height="56"
+                                           borderRadius="28" stretch="aspectFill"
+                                           visibility="{{ hasClientPhoto ? 'visible' : 'collapsed' }}" />
+                                    <StackLayout width="56" height="56" borderRadius="28"
+                                                 backgroundColor="#E0E0E0" horizontalAlignment="center"
+                                                 visibility="{{ hasClientPhoto ? 'collapsed' : 'visible' }}">
+                                        <Label text="👤" fontSize="26" textAlignment="center"
+                                               verticalAlignment="middle" />
+                                    </StackLayout>
+                                </GridLayout>
+                                <StackLayout col="1" verticalAlignment="middle">
+                                    <Label text="{{ clientName }}" fontSize="18" fontWeight="bold"
+                                           color="#1A1A1A" marginBottom="2" />
+                                    <Label text="{{ clientEmail }}" fontSize="13" color="#757575" />
+                                </StackLayout>
+                            </GridLayout>
                             <StackLayout height="1" backgroundColor="#F0F0F0" marginBottom="10" />
                             <GridLayout columns="auto, *">
                                 <Label col="0" text="📅" fontSize="13" color="#9E9E9E"
@@ -109,17 +123,17 @@
                                        fontWeight="bold" color="#1A1A1A" verticalAlignment="middle" />
                             </GridLayout>
                             <GridLayout columns="auto, *">
-                                <StackLayout col="0" marginRight="14">
-                                    <Image src="{{ driverPhotoUrl }}" width="60" height="60"
-                                           borderRadius="30" stretch="aspectFill" loadMode="async"
-                                           visibility="{{ driverPhotoUrl ? 'visible' : 'collapsed' }}" />
+                                <GridLayout col="0" width="60" height="60" marginRight="14">
+                                    <Image src="{{ driverPhotoSource }}" width="60" height="60"
+                                           borderRadius="30" stretch="aspectFill"
+                                           visibility="{{ hasDriverPhoto ? 'visible' : 'collapsed' }}" />
                                     <StackLayout width="60" height="60" borderRadius="30"
                                                  backgroundColor="#E0E0E0" horizontalAlignment="center"
-                                                 visibility="{{ driverPhotoUrl ? 'collapsed' : 'visible' }}">
+                                                 visibility="{{ hasDriverPhoto ? 'collapsed' : 'visible' }}">
                                         <Label text="👤" fontSize="28" textAlignment="center"
                                                verticalAlignment="middle" />
                                     </StackLayout>
-                                </StackLayout>
+                                </GridLayout>
                                 <StackLayout col="1" verticalAlignment="middle">
                                     <Label text="{{ driverName }}" fontSize="16" fontWeight="bold"
                                            color="#1A1A1A" marginBottom="4" />

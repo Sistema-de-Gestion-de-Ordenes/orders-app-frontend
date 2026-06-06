@@ -1,5 +1,7 @@
-import { ApplicationSettings, Http, ImageSource } from '@nativescript/core';
+import { ApplicationSettings, Http } from '@nativescript/core';
 import { API_CONFIG } from '../config/api.config';
+
+declare const java: any; // NativeScript Android — available globally at runtime
 
 export interface DriverData {
     name: string;
@@ -31,14 +33,18 @@ export class DriverService {
         addField('Plates',  data.plates);
         addField('Phone',   data.phone);
 
-        // Photo as binary via base64 → Uint8Array
-        const ext    = data.profilePhotoPath.toLowerCase().endsWith('.png') ? 'png' : 'jpg';
-        const mime   = ext === 'png' ? 'image/png' : 'image/jpeg';
-        const source = ImageSource.fromFileSync(data.profilePhotoPath);
-        const b64    = source.toBase64String(ext as 'jpg' | 'png');
-        const bin    = atob(b64);
-        const imgBytes = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) { imgBytes[i] = bin.charCodeAt(i); }
+        // Read raw file bytes via Java I/O — avoids atob()/charCodeAt() encoding corruption
+        const ext  = data.profilePhotoPath.toLowerCase().endsWith('.png') ? 'png' : 'jpg';
+        const mime = ext === 'png' ? 'image/png' : 'image/jpeg';
+        const fis  = new java.io.FileInputStream(data.profilePhotoPath);
+        const bos  = new java.io.ByteArrayOutputStream();
+        const tmpBuf: any = (Array as any).create('byte', 4096);
+        let nRead: number;
+        while ((nRead = fis.read(tmpBuf)) !== -1) { bos.write(tmpBuf, 0, nRead); }
+        fis.close();
+        const rawBytes = bos.toByteArray();
+        const imgBytes = new Uint8Array(rawBytes.length);
+        for (let i = 0; i < rawBytes.length; i++) { imgBytes[i] = rawBytes[i] & 0xFF; }
 
         parts.push(encoder.encode(
             `--${boundary}${CRLF}` +
