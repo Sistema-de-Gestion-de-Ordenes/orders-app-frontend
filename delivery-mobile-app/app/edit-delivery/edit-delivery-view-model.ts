@@ -157,7 +157,7 @@ export class EditDeliveryViewModel extends Observable {
 
         if (text.length < 3) return;
 
-        // Sin conexión: mostrar mensaje inmediatamente, no llamar a la API
+        // No connection: show message immediately, skip API call
         if (!this._geocodingService.isOnline()) {
             if (isOrigin) {
                 this._showOriginOffline = true;
@@ -200,7 +200,7 @@ export class EditDeliveryViewModel extends Observable {
                 this.notifyPropertyChange('showDestinationSuggestions', true);
                 this.notifyPropertyChange('destinationListHeight', this.destinationListHeight);
             }
-        } catch { /* sugerencias fallan silenciosamente */ }
+        } catch { /* suggestions fail silently */ }
         finally {
             if (isOrigin) {
                 this._isLoadingOriginSuggestions = false;

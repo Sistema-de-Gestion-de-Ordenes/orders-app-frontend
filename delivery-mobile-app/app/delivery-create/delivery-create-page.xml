@@ -10,7 +10,7 @@
     <ScrollView>
         <StackLayout backgroundColor="#F7F7F7" padding="0 0 40 0">
 
-            <!-- ── Cargando ── -->
+            <!-- ── Loading ── -->
             <StackLayout visibility="{{ isLoadingDropdowns ? 'visible' : 'collapsed' }}"
                          verticalAlignment="middle" horizontalAlignment="center" marginTop="80">
                 <ActivityIndicator busy="true" color="#4CAF50" width="48" height="48" />
@@ -18,7 +18,7 @@
                        textAlignment="center" marginTop="12" />
             </StackLayout>
 
-            <!-- ── Error de carga (sin datos) ── -->
+            <!-- ── Load error (no data) ── -->
             <StackLayout visibility="{{ hasError &amp;&amp; clients.length === 0 ? 'visible' : 'collapsed' }}"
                          verticalAlignment="middle" horizontalAlignment="center"
                          marginTop="80" padding="32">
@@ -28,10 +28,10 @@
                 <Button text="Reintentar" tap="{{ onRetryTap }}" class="btn-primary" width="160" />
             </StackLayout>
 
-            <!-- ── Formulario ── -->
+            <!-- ── Form ── -->
             <StackLayout visibility="{{ !isLoadingDropdowns &amp;&amp; !(hasError &amp;&amp; clients.length === 0) ? 'visible' : 'collapsed' }}">
 
-                <!-- Título sección participantes -->
+                <!-- Participants section title -->
                 <GridLayout columns="auto, *" padding="20 16 10 16">
                     <StackLayout col="0" width="28" height="28" borderRadius="14"
                                  backgroundColor="#E8F5E9"
@@ -44,7 +44,7 @@
                            color="#1A1A1A" verticalAlignment="middle" />
                 </GridLayout>
 
-                <!-- ── Card CLIENTE ── -->
+                <!-- ── CLIENT card ── -->
                 <StackLayout margin="0 16 10 16" backgroundColor="#FFFFFF"
                              borderRadius="14" borderWidth="1" borderColor="#EEEEEE"
                              androidElevation="2">
@@ -70,8 +70,8 @@
                     <StackLayout height="1" backgroundColor="#F5F5F5" />
 
                     <!--
-                        itemTap="onClientTap" → el ViewModel actualiza isSelected en cada ítem.
-                        El radio button reacciona al binding isSelected de cada ítem.
+                        itemTap="onClientTap" → the ViewModel updates isSelected on each item.
+                        The radio button reacts to each item's isSelected binding.
                     -->
                     <ListView items="{{ clients }}"
                               itemTap="{{ onClientTap }}"
@@ -112,7 +112,7 @@
 
                 </StackLayout>
 
-                <!-- ── Card REPARTIDOR ── -->
+                <!-- ── DRIVER card ── -->
                 <StackLayout margin="0 16 20 16" backgroundColor="#FFFFFF"
                              borderRadius="14" borderWidth="1" borderColor="#EEEEEE"
                              androidElevation="2">
@@ -176,7 +176,7 @@
 
                 </StackLayout>
 
-                <!-- Título sección ruta -->
+                <!-- Route section title -->
                 <GridLayout columns="auto, *" padding="4 16 12 16">
                     <StackLayout col="0" width="28" height="28" borderRadius="14"
                                  backgroundColor="#E8F5E9"
@@ -189,7 +189,7 @@
                            fontWeight="bold" color="#1A1A1A" verticalAlignment="middle" />
                 </GridLayout>
 
-                <!-- ORIGEN -->
+                <!-- ORIGIN -->
                 <Label text="PUNTO DE ORIGEN" fontSize="10" fontWeight="bold"
                        color="#9E9E9E" letterSpacing="1" margin="0 16 6 16" />
 
@@ -206,7 +206,7 @@
                                returnKeyType="next" />
                 </GridLayout>
 
-                <!-- Sugerencias origen - cargando -->
+                <!-- Origin suggestions - loading -->
                 <StackLayout visibility="{{ isLoadingOriginSuggestions ? 'visible' : 'collapsed' }}"
                              margin="0 16 0 16" backgroundColor="#FFFFFF"
                              borderWidth="1" borderColor="#E0E0E0" borderRadius="10" padding="14">
@@ -214,7 +214,7 @@
                                        horizontalAlignment="center" />
                 </StackLayout>
 
-                <!-- Sugerencias origen - sin conexión -->
+                <!-- Origin suggestions - offline -->
                 <StackLayout visibility="{{ showOriginOffline ? 'visible' : 'collapsed' }}"
                              margin="0 16 0 16" backgroundColor="#FFF8E1"
                              borderWidth="1" borderColor="#FFE082" borderRadius="10" padding="12">
@@ -222,7 +222,7 @@
                            fontSize="12" color="#F57F17" textWrap="true" textAlignment="center" />
                 </StackLayout>
 
-                <!-- Sugerencias origen - resultados -->
+                <!-- Origin suggestions - results -->
                 <StackLayout visibility="{{ showOriginSuggestions ? 'visible' : 'collapsed' }}"
                              margin="0 16 0 16" backgroundColor="#FFFFFF"
                              borderWidth="1" borderColor="#E0E0E0" borderRadius="10">
@@ -247,7 +247,7 @@
                     </StackLayout>
                 </StackLayout>
 
-                <!-- DESTINO -->
+                <!-- DESTINATION -->
                 <Label text="PUNTO DE DESTINO" fontSize="10" fontWeight="bold"
                        color="#9E9E9E" letterSpacing="1" margin="0 16 6 16" />
 
@@ -264,7 +264,7 @@
                                returnKeyType="done" />
                 </GridLayout>
 
-                <!-- Sugerencias destino - cargando -->
+                <!-- Destination suggestions - loading -->
                 <StackLayout visibility="{{ isLoadingDestinationSuggestions ? 'visible' : 'collapsed' }}"
                              margin="0 16 0 16" backgroundColor="#FFFFFF"
                              borderWidth="1" borderColor="#E0E0E0" borderRadius="10" padding="14">
@@ -272,7 +272,7 @@
                                        horizontalAlignment="center" />
                 </StackLayout>
 
-                <!-- Sugerencias destino - sin conexión -->
+                <!-- Destination suggestions - offline -->
                 <StackLayout visibility="{{ showDestinationOffline ? 'visible' : 'collapsed' }}"
                              margin="0 16 0 16" backgroundColor="#FFF8E1"
                              borderWidth="1" borderColor="#FFE082" borderRadius="10" padding="12">
@@ -280,7 +280,7 @@
                            fontSize="12" color="#F57F17" textWrap="true" textAlignment="center" />
                 </StackLayout>
 
-                <!-- Sugerencias destino - resultados -->
+                <!-- Destination suggestions - results -->
                 <StackLayout visibility="{{ showDestinationSuggestions ? 'visible' : 'collapsed' }}"
                              margin="0 16 0 16" backgroundColor="#FFFFFF"
                              borderWidth="1" borderColor="#E0E0E0" borderRadius="10">
@@ -294,7 +294,7 @@
                     </ListView>
                 </StackLayout>
 
-                <!-- Estimación -->
+                <!-- Delivery estimate -->
                 <GridLayout columns="auto, *" margin="16 16 0 16"
                             backgroundColor="#FFFFFF" borderRadius="14"
                             borderWidth="1" borderColor="#EEEEEE" padding="14 14"
@@ -314,13 +314,13 @@
                     </StackLayout>
                 </GridLayout>
 
-                <!-- Error de validación / submit -->
+                <!-- Validation / submit error -->
                 <Label text="{{ errorMessage }}" fontSize="13" color="#E53935"
                        textWrap="true" textAlignment="center"
                        visibility="{{ hasError ? 'visible' : 'collapsed' }}"
                        margin="12 16 0 16" />
 
-                <!-- Botón crear -->
+                <!-- Create button -->
                 <Button tap="{{ onSubmitTap }}"
                         isEnabled="{{ !isSubmitting }}"
                         text="{{ isSubmitting ? 'Creando...' : '📦  Crear entrega' }}"
@@ -329,7 +329,7 @@
                         borderRadius="16" height="54"
                         margin="20 16 0 16" />
 
-                <!-- Cancelar -->
+                <!-- Cancel -->
                 <Button text="Cancelar" tap="{{ onCancelTap }}"
                         fontSize="14" color="#9E9E9E"
                         backgroundColor="transparent"

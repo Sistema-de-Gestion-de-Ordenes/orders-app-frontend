@@ -22,7 +22,7 @@
     <GridLayout rows="*, auto">
 
         <!-- ── CONTENT ROW ── -->
-        <!-- rows: offline banner | filter chips | contenido -->
+        <!-- rows: offline banner | filter chips | content -->
         <GridLayout row="0" rows="auto, auto, *">
 
             <!-- Offline banner -->
@@ -35,9 +35,9 @@
             </GridLayout>
 
             <!-- ── FILTER CHIPS ──
-                 Cada chip usa su propio tap handler y un booleano dedicado para
-                 el color activo. NativeScript no evalúa comparaciones (===) en
-                 expresiones de binding XML, así que NO usar activeFilter === 'x'.
+                 Each chip has its own tap handler and a dedicated boolean for
+                 the active color. NativeScript does not evaluate comparisons (===)
+                 in XML binding expressions, so do NOT use activeFilter === 'x'.
             -->
             <ScrollView row="1" orientation="horizontal" scrollBarIndicatorVisible="false"
                         padding="10 12 6 12" backgroundColor="#FFFFFF">
@@ -114,7 +114,7 @@
                                 androidElevation="2">
                         <StackLayout col="0" padding="0">
 
-                            <!-- Área tappable para ir al detalle -->
+                            <!-- Tappable area — navigates to detail -->
                             <StackLayout tap="{{ onDetailTap }}">
 
                                 <!-- Header: Entrega # + badge -->
@@ -145,7 +145,7 @@
                                 <!-- Participantes -->
                                 <GridLayout columns="*, 1, *" padding="12 14 12 14">
                                     <StackLayout col="0" orientation="horizontal">
-                                        <!-- Foto cliente -->
+                                        <!-- Client photo -->
                                         <GridLayout width="40" height="40" margin="0 10 0 0"
                                                     verticalAlignment="middle">
                                             <Image src="{{ clientPhoto }}" width="40" height="40"
@@ -169,7 +169,7 @@
                                     </StackLayout>
                                     <StackLayout col="1" width="1" backgroundColor="#EEEEEE" margin="4 0" />
                                     <StackLayout col="2" orientation="horizontal" margin="0 0 0 12">
-                                        <!-- Foto repartidor -->
+                                        <!-- Driver photo -->
                                         <GridLayout width="40" height="40" margin="0 10 0 0"
                                                     verticalAlignment="middle">
                                             <Image src="{{ driverPhoto }}" width="40" height="40"
@@ -222,9 +222,9 @@
                                 </StackLayout>
 
                             </StackLayout>
-                            <!-- Fin área tappable -->
+                            <!-- End tappable area -->
 
-                            <!-- Botón editar (solo admins) — fuera del área tappable -->
+                            <!-- Edit button (admins only) — outside tappable area -->
                             <StackLayout padding="0 14 14 14"
                                          visibility="{{ isAdmin ? 'visible' : 'collapsed' }}">
                                 <StackLayout height="1" backgroundColor="#F0F0F0" marginBottom="12" />
