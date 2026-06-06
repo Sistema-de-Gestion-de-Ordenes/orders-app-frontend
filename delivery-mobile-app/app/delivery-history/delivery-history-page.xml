@@ -3,17 +3,8 @@
     <ActionBar flat="true" backgroundColor="#FFFFFF">
         <NavigationButton tap="onGoBack" android.systemIcon="ic_menu_back" />
         <ActionBar.titleView>
-            <GridLayout columns="auto, *" padding="0 14">
-                <StackLayout col="0" width="36" height="36" borderRadius="8"
-                             backgroundColor="#1A1A1A"
-                             verticalAlignment="middle" horizontalAlignment="center"
-                             margin="0 10 0 0">
-                    <Label text="🕐" fontSize="13" textAlignment="center"
-                           verticalAlignment="middle"/>
-                </StackLayout>
-                <Label col="1" text="Historial" fontSize="18" fontWeight="bold"
-                       color="#1A1A1A" textAlignment="center" verticalAlignment="middle" />
-            </GridLayout>
+            <Label text="Historial" fontSize="18" fontWeight="bold"
+                   color="#1A1A1A" textAlignment="center" horizontalAlignment="stretch" />
         </ActionBar.titleView>
     </ActionBar>
 
@@ -86,14 +77,19 @@
                         <!-- Participants -->
                         <GridLayout columns="*, 1, *" padding="12 14 12 14">
                             <StackLayout col="0" orientation="horizontal">
-                                <StackLayout width="40" height="40" borderRadius="20"
-                                             backgroundColor="#E0E0E0"
-                                             verticalAlignment="middle"
-                                             horizontalAlignment="center"
-                                             margin="0 10 0 0">
-                                    <Label text="👤" fontSize="18" textAlignment="center"
-                                           verticalAlignment="middle" />
-                                </StackLayout>
+                                <GridLayout width="40" height="40" margin="0 10 0 0"
+                                            verticalAlignment="middle">
+                                    <Image src="{{ clientPhoto }}" width="40" height="40"
+                                           borderRadius="20" stretch="aspectFill"
+                                           visibility="{{ hasClientPhoto ? 'visible' : 'collapsed' }}" />
+                                    <StackLayout width="40" height="40" borderRadius="20"
+                                                 backgroundColor="#E0E0E0"
+                                                 horizontalAlignment="center" verticalAlignment="center"
+                                                 visibility="{{ hasClientPhoto ? 'collapsed' : 'visible' }}">
+                                        <Label text="👤" fontSize="18" textAlignment="center"
+                                               verticalAlignment="middle" />
+                                    </StackLayout>
+                                </GridLayout>
                                 <StackLayout verticalAlignment="middle">
                                     <Label text="CLIENTE" fontSize="9" color="#BDBDBD"
                                            fontWeight="bold" letterSpacing="0.5" />
@@ -104,14 +100,19 @@
                             </StackLayout>
                             <StackLayout col="1" width="1" backgroundColor="#EEEEEE" margin="4 0" />
                             <StackLayout col="2" orientation="horizontal" margin="0 0 0 12">
-                                <StackLayout width="40" height="40" borderRadius="20"
-                                             backgroundColor="#E0E0E0"
-                                             verticalAlignment="middle"
-                                             horizontalAlignment="center"
-                                             margin="0 10 0 0">
-                                    <Label text="🚚" fontSize="18" textAlignment="center"
-                                           verticalAlignment="middle" />
-                                </StackLayout>
+                                <GridLayout width="40" height="40" margin="0 10 0 0"
+                                            verticalAlignment="middle">
+                                    <Image src="{{ driverPhoto }}" width="40" height="40"
+                                           borderRadius="20" stretch="aspectFill"
+                                           visibility="{{ hasDriverPhoto ? 'visible' : 'collapsed' }}" />
+                                    <StackLayout width="40" height="40" borderRadius="20"
+                                                 backgroundColor="#E0E0E0"
+                                                 horizontalAlignment="center" verticalAlignment="center"
+                                                 visibility="{{ hasDriverPhoto ? 'collapsed' : 'visible' }}">
+                                        <Label text="🚚" fontSize="18" textAlignment="center"
+                                               verticalAlignment="middle" />
+                                    </StackLayout>
+                                </GridLayout>
                                 <StackLayout verticalAlignment="middle">
                                     <Label text="REPARTIDOR" fontSize="9" color="#BDBDBD"
                                            fontWeight="bold" letterSpacing="0.5" />
