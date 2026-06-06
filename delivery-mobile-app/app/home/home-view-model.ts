@@ -62,12 +62,21 @@ export class DeliveryItem extends Observable {
 
 export class HomeViewModel extends Observable {
     private _deliveries          = new ObservableArray<DeliveryItem>();
+    private _allDeliveries       : DeliveryItem[] = [];
     private _isLoading: boolean  = false;
     private _hasError: boolean   = false;
     private _errorMessage        = '';
     private _isEmpty: boolean    = false;
     private _isOffline: boolean  = false;
 
+    // Un booleano por chip — NativeScript no soporta comparaciones en bindings XML
+    private _filterAll        = true;
+    private _filterPending    = false;
+    private _filterInTransit  = false;
+    private _filterDelivered  = false;
+    private _filterCanceled   = false;
+
+    private _activeFilter = 'all';
     private _isAdmin: boolean = false;
 
     private deliveryService     = new DeliveryService();
@@ -87,6 +96,8 @@ export class HomeViewModel extends Observable {
         new NotificationService().checkPendingNavigation();
     }
 
+    // ── Getters / Setters ────────────────────────────────────────────────────
+
     get deliveries(): ObservableArray<DeliveryItem> { return this._deliveries; }
 
     get isLoading(): boolean { return this._isLoading; }
@@ -104,6 +115,15 @@ export class HomeViewModel extends Observable {
     get isOffline(): boolean { return this._isOffline; }
     set isOffline(value: boolean) { this._isOffline = value; this.notifyPropertyChange('isOffline', value); }
 
+    // Booleanos de filtro (usados en XML para background/color de chips)
+    get filterAll():        boolean { return this._filterAll; }
+    get filterPending():    boolean { return this._filterPending; }
+    get filterInTransit():  boolean { return this._filterInTransit; }
+    get filterDelivered():  boolean { return this._filterDelivered; }
+    get filterCanceled():   boolean { return this._filterCanceled; }
+
+    // ── Load ─────────────────────────────────────────────────────────────────
+
     async loadDeliveries(): Promise<void> {
         this.isLoading = true;
         this.hasError  = false;
@@ -117,7 +137,6 @@ export class HomeViewModel extends Observable {
                 await this.sqliteService.saveDeliveries(data);
                 this.setDeliveries(data);
             } catch (error: any) {
-                // API failed — fall back to local storage
                 const local = await this.sqliteService.getDeliveries();
                 if (local.length > 0) {
                     this.isOffline = true;
@@ -128,7 +147,6 @@ export class HomeViewModel extends Observable {
                 }
             }
         } else {
-            // No connection — load from local storage
             this.isOffline = true;
             const local = await this.sqliteService.getDeliveries();
             this.setDeliveries(local);
@@ -138,10 +156,55 @@ export class HomeViewModel extends Observable {
     }
 
     private setDeliveries(deliveries: Delivery[]): void {
+        this._allDeliveries = deliveries.map(d => new DeliveryItem(d, this._isAdmin));
+        this.applyFilter();
+    }
+
+    // ── Filter ───────────────────────────────────────────────────────────────
+
+    private setActiveFilter(key: string): void {
+        this._activeFilter      = key;
+        this._filterAll         = key === 'all';
+        this._filterPending     = key === 'pending';
+        this._filterInTransit   = key === 'in_transit';
+        this._filterDelivered   = key === 'delivered';
+        this._filterCanceled    = key === 'canceled';
+
+        // Notifica todos los booleanos para que el XML actualice los chips
+        this.notifyPropertyChange('filterAll',       this._filterAll);
+        this.notifyPropertyChange('filterPending',   this._filterPending);
+        this.notifyPropertyChange('filterInTransit', this._filterInTransit);
+        this.notifyPropertyChange('filterDelivered', this._filterDelivered);
+        this.notifyPropertyChange('filterCanceled',  this._filterCanceled);
+    }
+
+    private applyFilter(): void {
         this._deliveries.splice(0, this._deliveries.length);
-        deliveries.forEach(d => this._deliveries.push(new DeliveryItem(d, this._isAdmin)));
+
+        const filtered = this._activeFilter === 'all'
+            ? this._allDeliveries
+            : this._allDeliveries.filter(d => {
+                if (this._activeFilter === 'in_transit') {
+                    return d.status === 'in_transit' || d.status === 'en_way';
+                }
+                if (this._activeFilter === 'canceled') {
+                    return d.status === 'canceled' || d.status === 'cancelled';
+                }
+                return d.status === this._activeFilter;
+            });
+
+        filtered.forEach(d => this._deliveries.push(d));
         this.isEmpty = this._deliveries.length === 0;
     }
+
+    // Cada chip tiene su propio handler — evita depender del texto del Label
+    onFilterAll():       void { this.setActiveFilter('all');        this.applyFilter(); }
+    onFilterPending():   void { this.setActiveFilter('pending');    this.applyFilter(); }
+    onFilterInTransit(): void { this.setActiveFilter('in_transit'); this.applyFilter(); }
+    onFilterDelivered(): void { this.setActiveFilter('delivered');  this.applyFilter(); }
+    onFilterCanceled():  void { this.setActiveFilter('canceled');   this.applyFilter(); }
+
+    // ── Other handlers ───────────────────────────────────────────────────────
 
     onRetryTap(): void {
         this.loadDeliveries();
