@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "170364493369",
+    "project_id": "orders-moviles",
+    "storage_bucket": "orders-moviles.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170364493369:android:8de9413859ad5a887ef7e8",
+        "android_client_info": {
+          "package_name": "com.moviles.orders"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpr9JWzLh0osSf3sZwGG05_ImT2-umswo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

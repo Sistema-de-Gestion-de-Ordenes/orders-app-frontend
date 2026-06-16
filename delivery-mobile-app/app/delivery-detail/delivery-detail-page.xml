@@ -1,0 +1,233 @@
+<Page navigatingTo="onNavigatingTo" xmlns="http://schemas.nativescript.org/tns.xsd">
+
+    <ActionBar flat="true" backgroundColor="#FFFFFF">
+        <NavigationButton android.systemIcon="ic_menu_back" tap="{{ onBackTap }}" />
+        <ActionBar.titleView>
+            <Label text="{{ title }}" fontSize="18" fontWeight="bold"
+                   color="#1A1A1A" textAlignment="center" verticalAlignment="middle" />
+        </ActionBar.titleView>
+    </ActionBar>
+
+    <!-- rows="*, auto": row 0 fills all space, row 1 is the sticky status button -->
+    <GridLayout rows="*, auto" backgroundColor="#F5F5F5">
+
+        <!-- Row 0: loading / error / content (single-cell overlay) -->
+        <GridLayout row="0">
+
+            <!-- Loading state -->
+            <StackLayout verticalAlignment="middle" horizontalAlignment="center"
+                         visibility="{{ isLoading ? 'visible' : 'collapsed' }}">
+                <ActivityIndicator busy="true" color="#4CAF50" width="48" height="48" />
+                <Label text="Cargando entrega..." fontSize="14" color="#757575"
+                       textAlignment="center" marginTop="12" />
+            </StackLayout>
+
+            <!-- Error state -->
+            <StackLayout verticalAlignment="middle" horizontalAlignment="center" padding="32"
+                         visibility="{{ hasError ? 'visible' : 'collapsed' }}">
+                <Label text="⚠️" fontSize="48" textAlignment="center" />
+                <Label text="{{ errorMessage }}" fontSize="14" color="#757575" textWrap="true"
+                       textAlignment="center" marginTop="8" marginBottom="16" />
+                <Button text="Reintentar" tap="{{ onRetryTap }}" class="btn-primary" width="160" />
+            </StackLayout>
+
+            <!-- Content -->
+            <ScrollView visibility="{{ !isLoading &amp;&amp; !hasError ? 'visible' : 'collapsed' }}">
+                <StackLayout padding="16 16 32 16">
+
+                    <!-- ── Unified card ────────────────────────────────────────────── -->
+                    <StackLayout backgroundColor="#FFFFFF" borderRadius="16"
+                                 borderWidth="1" borderColor="#EEEEEE" androidElevation="2">
+
+                        <!-- Current status -->
+                        <StackLayout padding="14 16">
+                            <GridLayout columns="auto, *, auto">
+                                <StackLayout col="0" width="36" height="36" borderRadius="18"
+                                             backgroundColor="#F5F5F5"
+                                             verticalAlignment="middle" horizontalAlignment="center"
+                                             marginRight="12">
+                                    <Label text="🕐" fontSize="16" textAlignment="center"
+                                           verticalAlignment="middle" />
+                                </StackLayout>
+                                <StackLayout col="1" verticalAlignment="middle">
+                                    <Label text="ESTADO ACTUAL" fontSize="10" color="#9E9E9E"
+                                           fontWeight="bold" letterSpacing="0.5" />
+                                    <Label text="{{ statusLabel }}" fontSize="18" fontWeight="bold"
+                                           color="#1A1A1A" />
+                                </StackLayout>
+                                <StackLayout col="2" backgroundColor="{{ statusColor }}"
+                                             borderRadius="20" padding="5 12"
+                                             verticalAlignment="middle">
+                                    <Label text="{{ deliveryIdLabel }}" fontSize="12" fontWeight="bold"
+                                           color="{{ statusTextColor }}" textAlignment="center" />
+                                </StackLayout>
+                            </GridLayout>
+                        </StackLayout>
+
+                        <StackLayout height="1" backgroundColor="#F0F0F0" />
+
+                        <!-- Client -->
+                        <StackLayout padding="14 16">
+                            <GridLayout columns="auto, *" marginBottom="10">
+                                <StackLayout col="0" width="36" height="36" borderRadius="18"
+                                             backgroundColor="#E8F5E9"
+                                             verticalAlignment="middle" horizontalAlignment="center"
+                                             marginRight="10">
+                                    <Label text="👤" fontSize="16" textAlignment="center"
+                                           verticalAlignment="middle" />
+                                </StackLayout>
+                                <Label col="1" text="Cliente" fontSize="15" fontWeight="bold"
+                                       color="#1A1A1A" verticalAlignment="middle" />
+                            </GridLayout>
+                            <GridLayout columns="auto, *" marginBottom="10">
+                                <GridLayout col="0" width="56" height="56" marginRight="14">
+                                    <Image src="{{ clientPhotoSource }}" width="56" height="56"
+                                           borderRadius="28" stretch="aspectFill"
+                                           visibility="{{ hasClientPhoto ? 'visible' : 'collapsed' }}" />
+                                    <StackLayout width="56" height="56" borderRadius="28"
+                                                 backgroundColor="#E0E0E0" horizontalAlignment="center"
+                                                 visibility="{{ hasClientPhoto ? 'collapsed' : 'visible' }}">
+                                        <Label text="👤" fontSize="26" textAlignment="center"
+                                               verticalAlignment="middle" />
+                                    </StackLayout>
+                                </GridLayout>
+                                <StackLayout col="1" verticalAlignment="middle">
+                                    <Label text="{{ clientName }}" fontSize="18" fontWeight="bold"
+                                           color="#1A1A1A" marginBottom="2" />
+                                    <Label text="{{ clientEmail }}" fontSize="13" color="#757575" />
+                                </StackLayout>
+                            </GridLayout>
+                            <StackLayout height="1" backgroundColor="#F0F0F0" marginBottom="10" />
+                            <GridLayout columns="auto, *">
+                                <Label col="0" text="📅" fontSize="13" color="#9E9E9E"
+                                       verticalAlignment="middle" marginRight="8" />
+                                <Label col="1"
+                                       text="{{ 'Registrado desde: ' + clientRegisteredSince }}"
+                                       fontSize="13" color="#757575" verticalAlignment="middle" />
+                            </GridLayout>
+                        </StackLayout>
+
+                        <StackLayout height="1" backgroundColor="#F0F0F0" />
+
+                        <!-- Assigned driver -->
+                        <StackLayout padding="14 16">
+                            <GridLayout columns="auto, *" marginBottom="12">
+                                <StackLayout col="0" width="36" height="36" borderRadius="18"
+                                             backgroundColor="#FFF3E0"
+                                             verticalAlignment="middle" horizontalAlignment="center"
+                                             marginRight="10">
+                                    <Label text="🚚" fontSize="16" textAlignment="center"
+                                           verticalAlignment="middle" />
+                                </StackLayout>
+                                <Label col="1" text="Repartidor Asignado" fontSize="15"
+                                       fontWeight="bold" color="#1A1A1A" verticalAlignment="middle" />
+                            </GridLayout>
+                            <GridLayout columns="auto, *">
+                                <GridLayout col="0" width="60" height="60" marginRight="14">
+                                    <Image src="{{ driverPhotoSource }}" width="60" height="60"
+                                           borderRadius="30" stretch="aspectFill"
+                                           visibility="{{ hasDriverPhoto ? 'visible' : 'collapsed' }}" />
+                                    <StackLayout width="60" height="60" borderRadius="30"
+                                                 backgroundColor="#E0E0E0" horizontalAlignment="center"
+                                                 visibility="{{ hasDriverPhoto ? 'collapsed' : 'visible' }}">
+                                        <Label text="👤" fontSize="28" textAlignment="center"
+                                               verticalAlignment="middle" />
+                                    </StackLayout>
+                                </GridLayout>
+                                <StackLayout col="1" verticalAlignment="middle">
+                                    <Label text="{{ driverName }}" fontSize="16" fontWeight="bold"
+                                           color="#1A1A1A" marginBottom="4" />
+                                    <Label text="{{ driverPhone }}" fontSize="13" color="#757575"
+                                           marginBottom="6" />
+                                    <GridLayout columns="auto, auto"
+                                                visibility="{{ driverVerified ? 'visible' : 'collapsed' }}">
+                                        <StackLayout col="0" width="16" height="16" borderRadius="8"
+                                                     backgroundColor="#4CAF50"
+                                                     verticalAlignment="middle" horizontalAlignment="center"
+                                                     marginRight="6">
+                                            <Label text="✓" fontSize="9" color="#FFFFFF"
+                                                   textAlignment="center" verticalAlignment="middle" />
+                                        </StackLayout>
+                                        <Label col="1" text="Verificado" fontSize="13" fontWeight="bold"
+                                               color="#4CAF50" verticalAlignment="middle" />
+                                    </GridLayout>
+                                </StackLayout>
+                            </GridLayout>
+                        </StackLayout>
+
+                        <StackLayout height="1" backgroundColor="#F0F0F0" />
+
+                        <!-- Delivery route -->
+                        <StackLayout padding="14 16">
+                            <GridLayout columns="auto, *" marginBottom="16">
+                                <StackLayout col="0" width="36" height="36" borderRadius="18"
+                                             backgroundColor="#E8F5E9"
+                                             verticalAlignment="middle" horizontalAlignment="center"
+                                             marginRight="10">
+                                    <Label text="📍" fontSize="16" textAlignment="center"
+                                           verticalAlignment="middle" />
+                                </StackLayout>
+                                <Label col="1" text="Ruta de Entrega" fontSize="15"
+                                       fontWeight="bold" color="#1A1A1A" verticalAlignment="middle" />
+                            </GridLayout>
+
+                            <GridLayout columns="auto, *" rows="auto, auto, auto">
+                                <StackLayout col="0" row="0" width="20" horizontalAlignment="center"
+                                             verticalAlignment="top" marginTop="4">
+                                    <StackLayout width="16" height="16" borderRadius="8"
+                                                 borderWidth="3" borderColor="#4CAF50"
+                                                 backgroundColor="#FFFFFF" horizontalAlignment="center" />
+                                </StackLayout>
+                                <StackLayout col="1" row="0" marginLeft="12" marginBottom="10">
+                                    <Label text="ORIGEN" fontSize="10" color="#9E9E9E"
+                                           fontWeight="bold" letterSpacing="0.5" />
+                                    <Label text="{{ origin }}" fontSize="14" color="#1A1A1A"
+                                           textWrap="true" />
+                                </StackLayout>
+
+                                <StackLayout col="0" row="1" width="2" height="24"
+                                             backgroundColor="#BDBDBD" horizontalAlignment="center" />
+
+                                <StackLayout col="0" row="2" width="20" horizontalAlignment="center"
+                                             verticalAlignment="top" marginTop="4">
+                                    <StackLayout width="16" height="16" borderRadius="8"
+                                                 borderWidth="3" borderColor="#E53935"
+                                                 backgroundColor="#FFFFFF" horizontalAlignment="center" />
+                                </StackLayout>
+                                <StackLayout col="1" row="2" marginLeft="12">
+                                    <Label text="DESTINO" fontSize="10" color="#9E9E9E"
+                                           fontWeight="bold" letterSpacing="0.5" />
+                                    <Label text="{{ destination }}" fontSize="14" color="#1A1A1A"
+                                           textWrap="true" />
+                                </StackLayout>
+                            </GridLayout>
+                        </StackLayout>
+
+                    </StackLayout>
+                    <!-- ── End unified card ────────────────────────────────────── -->
+
+                </StackLayout>
+            </ScrollView>
+
+        </GridLayout>
+        <!-- End row 0 -->
+
+        <!-- Row 1: Status change button (Admin only, shown when content is loaded) -->
+        <StackLayout row="1" backgroundColor="#FFFFFF" padding="12 16 24 16"
+                     borderTopWidth="1" borderTopColor="#EEEEEE"
+                     visibility="{{ isAdmin &amp;&amp; !isLoading &amp;&amp; !hasError ? 'visible' : 'collapsed' }}">
+            <Button text="{{ isUpdatingStatus ? 'Actualizando...' : 'Cambiar estado' }}"
+                    tap="{{ onChangeStatusTap }}"
+                    isEnabled="{{ !isUpdatingStatus &amp;&amp; !isDeletingDelivery }}"
+                    backgroundColor="#4CAF50" color="#FFFFFF"
+                    borderRadius="12" height="52" fontSize="16" fontWeight="bold" />
+            <Button text="{{ isDeletingDelivery ? 'Eliminando...' : 'Eliminar entrega' }}"
+                    tap="{{ onDeleteTap }}"
+                    isEnabled="{{ !isDeletingDelivery &amp;&amp; !isUpdatingStatus }}"
+                    backgroundColor="#E53935" color="#FFFFFF"
+                    borderRadius="12" height="52" fontSize="16" fontWeight="bold"
+                    marginTop="10" />
+        </StackLayout>
+
+    </GridLayout>
+</Page>

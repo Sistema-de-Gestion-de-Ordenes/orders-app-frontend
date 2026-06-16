@@ -1,0 +1,75 @@
+<Page navigatingTo="onNavigatingTo" actionBarHidden="true"
+      xmlns="http://schemas.nativescript.org/tns.xsd">
+
+    <ScrollView>
+        <StackLayout class="page-container">
+
+            <!-- App logo placeholder -->
+            <GridLayout width="72" height="72" borderRadius="18" backgroundColor="#4CAF50"
+                        horizontalAlignment="center" marginTop="80" marginBottom="12">
+                <Label text="⚡" fontSize="36" color="#FFFFFF"
+                       textAlignment="center" verticalAlignment="middle" />
+            </GridLayout>
+
+            <!-- Subtitle -->
+            <Label text="Gestión de logística inteligente" class="subtitle" marginBottom="32" />
+
+            <!-- Email field -->
+            <Label text="Correo Electrónico" class="label-field" />
+            <GridLayout columns="auto, *" class="input-field">
+                <Label col="0" text="✉" fontSize="18" color="#9E9E9E"
+                       verticalAlignment="middle" marginRight="10" />
+                <TextField col="1" hint="juan.perez@correo.com" keyboardType="email"
+                           autocorrect="false" autocapitalizationType="none"
+                           text="{{ email }}" backgroundColor="transparent"
+                           borderWidth="0" padding="0" />
+            </GridLayout>
+
+            <!-- Password label row -->
+            <GridLayout columns="*, auto" marginBottom="6">
+                <Label col="0" text="Contraseña" class="label-field" marginBottom="0" />
+                <Label col="1" text="¿Olvidaste tu contraseña?" class="link"
+                       fontSize="13" verticalAlignment="middle" />
+            </GridLayout>
+
+            <!-- Password field -->
+            <GridLayout columns="auto, *, auto" class="input-field">
+                <Label col="0" text="🔒" fontSize="18" color="#9E9E9E"
+                       verticalAlignment="middle" marginRight="10" />
+                <TextField col="1" secure="{{ passwordSecure }}" hint="••••••••"
+                           text="{{ password }}" backgroundColor="transparent"
+                           borderWidth="0" padding="0" />
+                <Label col="2" text="👁" fontSize="18" color="#9E9E9E"
+                       verticalAlignment="middle" marginLeft="10"
+                       tap="{{ onTogglePassword }}" />
+            </GridLayout>
+
+            <!-- Error message -->
+            <Label text="{{ errorMessage }}" class="error-label"
+                   visibility="{{ hasError ? 'visible' : 'collapsed' }}" textWrap="true" />
+
+            <!-- Loading indicator -->
+            <ActivityIndicator busy="{{ isLoading }}" color="#4CAF50"
+                               visibility="{{ isLoading ? 'visible' : 'collapsed' }}" />
+
+            <!-- Login button -->
+            <Button text="Iniciar sesión" tap="{{ onLoginTap }}"
+                    isEnabled="{{ !isLoading }}" class="btn-primary" />
+
+            <!-- Info text -->
+            <Label class="text-small" marginTop="12" textWrap="true"
+                   text="Los usuarios ya existen en la base de datos.&#10;Contacte al administrador si tiene problemas de acceso." />
+
+            <!-- Spacer -->
+            <StackLayout height="60" />
+
+            <!-- Bottom register text -->
+            <GridLayout columns="auto, auto" horizontalAlignment="center" marginBottom="16">
+                <Label col="0" text="¿No tienes cuenta? " fontSize="14" color="#757575" />
+                <Label col="1" text="Solicitar acceso" class="link" />
+            </GridLayout>
+
+        </StackLayout>
+    </ScrollView>
+
+</Page>
